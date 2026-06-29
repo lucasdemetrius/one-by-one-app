@@ -1,0 +1,5 @@
+<!-- Favicon do OneByOne: os dois círculos da marca (gestor + liderado) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <circle cx="18" cy="24" r="13" fill="#1f6f6b" />
+  <circle cx="30" cy="24" r="13" fill="#d9622b" fill-opacity="0.9" style="mix-blend-mode: multiply" />
+</svg>

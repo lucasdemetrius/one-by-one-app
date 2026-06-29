@@ -1,0 +1,580 @@
+/* ═══════════════════════════════════════════════════════════════
+   index.css — Sistema de Design do OneByOne (multi-tema)
+   ---------------------------------------------------------------
+   Toda a aparência vem de variáveis CSS (tokens). Trocar de tema é
+   só trocar os valores dessas variáveis — os componentes se adaptam
+   sozinhos, sem reescrever nada.
+
+   São TRÊS temas, selecionáveis pelo usuário (ver SeletorTema.tsx):
+     • coop        → "Co-op split humano" (PADRÃO): quente, terroso, humano
+     • brutalista  → "Neo-brutalista lúdico": bordas pretas, cores sólidas,
+                     sombras duras, tipografia forte
+     • energetico  → "Gamificado energético": vibrante, cantos redondos,
+                     cara de jogo/Duolingo
+
+   O tema ativo é definido pelo atributo data-tema no <html>:
+     <html data-tema="brutalista"> ...
+
+   Tailwind v4: os tokens do bloco @theme abaixo (tema PADRÃO) viram
+   utilitários (ex.: --color-areia → classe bg-areia). Os blocos
+   html[data-tema="..."] sobrescrevem essas variáveis em runtime.
+   ═══════════════════════════════════════════════════════════════ */
+
+@import 'tailwindcss';
+
+/* ═══════════════════════════════════════════════════════════════
+   TEMA PADRÃO — "coop" (Co-op split humano)
+   Definido no @theme para que o Tailwind gere os utilitários.
+   ═══════════════════════════════════════════════════════════════ */
+@theme {
+  /* Superfícies */
+  --color-areia: #f4ece0;
+  --color-areia-escura: #ebe1d2;
+  --color-creme: #fbf6ee;
+  --color-borda: #e3d6c3;
+
+  /* Tinta (textos) */
+  --color-tinta: #2c2520;
+  --color-tinta-suave: #6f655b;
+
+  /* Persona GESTOR (petróleo calmo) */
+  --color-gestor: #1f6f6b;
+  --color-gestor-claro: #d4e7e4;
+  --color-gestor-tinta: #123f3c;
+
+  /* Persona LIDERADO (terracota) */
+  --color-liderado: #d9622b;
+  --color-liderado-claro: #f6ddca;
+  --color-liderado-tinta: #8a3a14;
+
+  /* Junção/sincronia da dupla (oliva dourado) */
+  --color-juncao: #b8893b;
+  --color-juncao-claro: #f0e2c4;
+
+  /* Sinais */
+  --color-sucesso: #4f7a3a;
+  --color-alerta: #c2410c;
+
+  /* Tipografia */
+  --font-display: 'Fraunces', 'Georgia', serif;
+  --font-corpo: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  /* Raios */
+  --radius-suave: 0.75rem;
+  --radius-cartao: 1.25rem;
+  --radius-grande: 2rem;
+
+  /* Sombras (quentes e difusas) */
+  --shadow-cartao: 0 2px 4px rgba(74, 55, 40, 0.04),
+    0 12px 32px -8px rgba(74, 55, 40, 0.12);
+  --shadow-flutuante: 0 8px 16px rgba(74, 55, 40, 0.08),
+    0 24px 48px -12px rgba(74, 55, 40, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEMA "escuro" — Dark neutro e limpo (modo escuro clássico)
+   Cinza-ardósia, acentos vibrantes que brilham no escuro. Mantém
+   a tipografia premium do padrão. Ideal para quem prefere modo escuro.
+   ═══════════════════════════════════════════════════════════════ */
+html[data-tema='escuro'] {
+  --color-areia: #14171c;
+  --color-areia-escura: #1e232b;
+  --color-creme: #1e232b;
+  --color-borda: #323a46;
+
+  --color-tinta: #e9ebef;
+  --color-tinta-suave: #9aa1ac;
+
+  --color-gestor: #818cf8;
+  --color-gestor-claro: #2a3050;
+  --color-gestor-tinta: #c7d2fe;
+
+  --color-liderado: #fb7185;
+  --color-liderado-claro: #3d2730;
+  --color-liderado-tinta: #fecdd3;
+
+  --color-juncao: #a78bfa;
+  --color-juncao-claro: #2f2a48;
+
+  --color-sucesso: #4ade80;
+  --color-alerta: #f87171;
+
+  --shadow-cartao: 0 2px 4px rgba(0, 0, 0, 0.3), 0 12px 32px -8px rgba(0, 0, 0, 0.55);
+  --shadow-flutuante: 0 8px 16px rgba(0, 0, 0, 0.45), 0 24px 48px -12px rgba(0, 0, 0, 0.65);
+}
+
+/* No escuro, a textura de pontos vira uma grade luminosa discreta */
+html[data-tema='escuro'] .textura-papel {
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.035) 1px, transparent 0);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEMA "brutalista" — Neo-brutalista lúdico
+   Branco/amarelo, bordas pretas grossas, sombras DURAS (offset),
+   cores primárias vibrantes, tipografia geométrica forte.
+   ═══════════════════════════════════════════════════════════════ */
+html[data-tema='brutalista'] {
+  --color-areia: #fffcef;
+  --color-areia-escura: #ffe45e; /* bloco amarelo bem brutalista */
+  --color-creme: #ffffff;
+  --color-borda: #16110a; /* preto = assinatura do estilo */
+
+  --color-tinta: #16110a;
+  --color-tinta-suave: #555049;
+
+  --color-gestor: #2d5bff; /* azul elétrico */
+  --color-gestor-claro: #d3deff;
+  --color-gestor-tinta: #11268a;
+
+  --color-liderado: #ff5c39; /* laranja vibrante */
+  --color-liderado-claro: #ffd9cf;
+  --color-liderado-tinta: #a3260f;
+
+  --color-juncao: #7c3aed; /* roxo */
+  --color-juncao-claro: #e6d7ff;
+
+  --color-sucesso: #1f9d55;
+  --color-alerta: #e11d48;
+
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-corpo: 'Space Grotesk', system-ui, sans-serif;
+
+  --radius-suave: 0.25rem;
+  --radius-cartao: 0.35rem;
+  --radius-grande: 0.5rem;
+
+  /* Sombra dura deslocada (sem blur) — a marca registrada do brutalismo */
+  --shadow-cartao: 4px 4px 0 var(--color-borda);
+  --shadow-flutuante: 8px 8px 0 var(--color-borda);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEMA "energetico" — Gamificado energético
+   Claro e vibrante, cantos bem redondos, sombra "3D" inferior,
+   cores de jogo (azul/laranja/verde de recompensa), fontes redondas.
+   ═══════════════════════════════════════════════════════════════ */
+html[data-tema='energetico'] {
+  --color-areia: #f6faf3;
+  --color-areia-escura: #e9f5e0;
+  --color-creme: #ffffff;
+  --color-borda: #dde6d8;
+
+  --color-tinta: #2b2d42;
+  --color-tinta-suave: #6b7280;
+
+  --color-gestor: #1cb0f6; /* azul */
+  --color-gestor-claro: #d4f0ff;
+  --color-gestor-tinta: #0a6ea3;
+
+  --color-liderado: #ff9600; /* laranja energia */
+  --color-liderado-claro: #ffe7c2;
+  --color-liderado-tinta: #b36900;
+
+  --color-juncao: #58cc02; /* verde de recompensa */
+  --color-juncao-claro: #d7f5c2;
+
+  --color-sucesso: #58cc02;
+  --color-alerta: #ff4b4b;
+
+  --font-display: 'Baloo 2', system-ui, sans-serif;
+  --font-corpo: 'Nunito', system-ui, sans-serif;
+
+  --radius-suave: 1rem;
+  --radius-cartao: 1.75rem;
+  --radius-grande: 2.5rem;
+
+  /* Sombra "3D" com apoio inferior (cara de botão de jogo) */
+  --shadow-cartao: 0 6px 0 rgba(43, 45, 66, 0.06),
+    0 10px 28px -8px rgba(88, 204, 2, 0.25);
+  --shadow-flutuante: 0 8px 0 rgba(43, 45, 66, 0.08),
+    0 24px 48px -12px rgba(28, 176, 246, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEMA "tech" — Dark premium (moderno, sofisticado, "tecnológico")
+   Fundo escuro azulado, acento esmeralda, personas em azul/coral,
+   tipografia geométrica (Space Grotesk), brilho sutil. Estilo de
+   produto premium (Linear/Vercel), sem cara de chatbot de IA.
+   ═══════════════════════════════════════════════════════════════ */
+html[data-tema='tech'] {
+  --color-areia: #0b0e14; /* near-black azulado */
+  --color-areia-escura: #11151e; /* seções alternadas */
+  --color-creme: #161b26; /* cartões elevados */
+  --color-borda: #2a3140; /* bordas sutis */
+
+  --color-tinta: #eef2f8; /* texto near-white */
+  --color-tinta-suave: #93a0b4; /* texto secundário */
+
+  --color-gestor: #4f9dff; /* azul elétrico */
+  --color-gestor-claro: #16243b;
+  --color-gestor-tinta: #bcd8ff;
+
+  --color-liderado: #ff8a4c; /* coral/âmbar quente */
+  --color-liderado-claro: #2e1d12;
+  --color-liderado-tinta: #ffcaa6;
+
+  --color-juncao: #2ee6ad; /* esmeralda/menta — acento da marca */
+  --color-juncao-claro: #0f2a21;
+
+  --color-sucesso: #2ee6ad;
+  --color-alerta: #ff5d6c;
+
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-corpo: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --radius-suave: 0.7rem;
+  --radius-cartao: 1.1rem;
+  --radius-grande: 1.6rem;
+
+  /* Sombras profundas + leve borda interna luminosa (sensação premium) */
+  --shadow-cartao: inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 10px 34px -12px rgba(0, 0, 0, 0.7);
+  --shadow-flutuante: inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 24px 60px -16px rgba(0, 0, 0, 0.8);
+}
+
+/* No tema dark, a textura de pontos vira uma grade luminosa discreta */
+html[data-tema='tech'] .textura-papel {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(255, 255, 255, 0.04) 1px,
+    transparent 0
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEMA "encanto" — Claro, premium e ENCANTADOR (PADRÃO)
+   Pensado para encantar o time de RH: fundo claro e acolhedor,
+   gradiente alegre (violeta → coral), tipografia amigável e
+   moderna (Plus Jakarta), cantos generosos e sombras suaves.
+   ═══════════════════════════════════════════════════════════════ */
+html[data-tema='encanto'] {
+  --color-areia: #f7f5ff; /* off-white com leve toque lavanda */
+  --color-areia-escura: #efeafe; /* seções alternadas */
+  --color-creme: #ffffff; /* cartões */
+  --color-borda: #e9e3f7; /* bordas suaves */
+
+  --color-tinta: #211c33; /* índigo bem escuro (mais quente que preto) */
+  --color-tinta-suave: #6f6886;
+
+  --color-gestor: #6366f1; /* índigo */
+  --color-gestor-claro: #e6e7ff;
+  --color-gestor-tinta: #3a3aa6;
+
+  --color-liderado: #fb7185; /* coral/rosa */
+  --color-liderado-claro: #ffe2e8;
+  --color-liderado-tinta: #b83a52;
+
+  --color-juncao: #8b5cf6; /* violeta — acento da marca */
+  --color-juncao-claro: #efe8ff;
+
+  --color-sucesso: #22c55e;
+  --color-alerta: #ef4444;
+
+  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-corpo: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --radius-suave: 0.9rem;
+  --radius-cartao: 1.5rem;
+  --radius-grande: 2.25rem;
+
+  /* Sombras suaves e levemente coloridas (sensação premium e leve) */
+  --shadow-cartao: 0 2px 4px rgba(99, 102, 241, 0.05),
+    0 18px 40px -14px rgba(124, 92, 255, 0.2);
+  --shadow-flutuante: 0 10px 20px rgba(99, 102, 241, 0.1),
+    0 32px 64px -16px rgba(124, 92, 255, 0.32);
+
+  --gradiente-marca: linear-gradient(135deg, #7c5cff 0%, #fb7185 100%);
+}
+
+/* ── Gradiente da marca ────────────────────────────────────────────
+   Cada tema define seu --gradiente-marca; aqui ficam os fallbacks e as
+   classes utilitárias que usam essa variável. */
+:root {
+  --gradiente-marca: linear-gradient(135deg, #7c5cff 0%, #fb7185 100%);
+}
+html[data-tema='tech'] {
+  --gradiente-marca: linear-gradient(135deg, #2ee6ad 0%, #4f9dff 100%);
+}
+html[data-tema='coop'] {
+  --gradiente-marca: linear-gradient(135deg, #1f6f6b 0%, #d9622b 100%);
+}
+
+/* Fundo com o gradiente da marca (botões, faixas, anéis) */
+.gradiente-marca {
+  background-image: var(--gradiente-marca);
+}
+
+/* Texto preenchido com o gradiente da marca (títulos de destaque) */
+.texto-gradiente {
+  background-image: var(--gradiente-marca);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   Reset e base
+   ─────────────────────────────────────────────────────────────── */
+/* IMPORTANTE: NÃO usar aqui um reset "* { margin:0; padding:0 }".
+   O Tailwind v4 já zera margin/padding/box-sizing no seu preflight, e um
+   reset global solto (fora de @layer) ANULA todas as classes de espaçamento
+   (mx-auto, px-6, p-7…), quebrando a centralização e os respiros. */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-corpo);
+  background-color: var(--color-areia);
+  color: var(--color-tinta);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* Transição suave ao trocar de tema */
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Títulos usam a fonte de display do tema ativo */
+.fonte-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  letter-spacing: -0.01em;
+}
+
+/* Textura sutil de papel (some nos temas mais "limpos", mas não atrapalha) */
+.textura-papel {
+  background-image: radial-gradient(
+      circle at 1px 1px,
+      rgba(74, 55, 40, 0.04) 1px,
+      transparent 0
+    );
+  background-size: 22px 22px;
+}
+
+/* Animação de entrada reutilizável */
+@keyframes surgir {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animar-surgir {
+  animation: surgir 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* "Pop" com leve escala — para selos, fichas e pontos (toque mais lúdico) */
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animar-pop {
+  animation: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Aceno do emoji 👋 — toque lúdico nas boas-vindas (login/onboarding) */
+@keyframes acenar {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  10%, 30% { transform: rotate(16deg); }
+  20%, 40% { transform: rotate(-8deg); }
+}
+
+.animar-acenar {
+  transform-origin: 70% 70%;
+  animation: acenar 2.2s ease-in-out infinite;
+}
+
+/* Background "vivo": blobs grandes que balançam devagar, mostrando que o app
+   está respirando. Usados com blur-3xl + opacidade baixa para não atrapalhar a
+   leitura. Três variações com tempos diferentes evitam sincronia robótica. */
+@keyframes flutuar-a {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(4%, -3%) scale(1.08); }
+}
+@keyframes flutuar-b {
+  0%, 100% { transform: translate(0, 0) scale(1.05); }
+  50% { transform: translate(-5%, 4%) scale(0.95); }
+}
+@keyframes flutuar-c {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(3%, 5%) scale(1.1); }
+}
+.animar-flutuar-a { animation: flutuar-a 19s ease-in-out infinite; }
+.animar-flutuar-b { animation: flutuar-b 23s ease-in-out infinite; }
+.animar-flutuar-c { animation: flutuar-c 27s ease-in-out infinite; }
+
+/* Bolhas de sabão SUBINDO no fundo do site — umas só sobem e somem no topo,
+   outras estouram no meio do caminho (com um "pop" tipo bolha de sabão: anel
+   iridescente que se expande e some). As variáveis (--op, --sway, --cor) variam
+   por bolha. Iridescência leve (conic-gradient) dá o brilho de bolha real. */
+.bolha {
+  position: absolute;
+  bottom: 0;
+  border-radius: 9999px;
+  opacity: 0; /* a animação controla a opacidade */
+  background:
+    radial-gradient(circle at 30% 26%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.1) 40%, transparent 62%),
+    conic-gradient(
+      from 210deg,
+      color-mix(in srgb, var(--cor, #fff) 55%, transparent),
+      color-mix(in srgb, #67e8f9 40%, transparent),
+      color-mix(in srgb, #f0abfc 40%, transparent),
+      color-mix(in srgb, var(--cor, #fff) 55%, transparent)
+    );
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: inset -2px -3px 10px rgba(255, 255, 255, 0.35), inset 3px 4px 12px color-mix(in srgb, var(--cor, #fff) 30%, transparent);
+}
+.bolha-sobe {
+  animation: bolha-sobe linear infinite;
+}
+.bolha-sobe-pop {
+  animation: bolha-sobe-pop ease-out infinite;
+}
+@keyframes bolha-sobe {
+  0% { transform: translate(0, 14vh) scale(0.92); opacity: 0; }
+  12% { opacity: var(--op, 0.35); }
+  50% { transform: translate(var(--sway, 0), -45vh) scale(1); }
+  88% { opacity: var(--op, 0.35); }
+  100% { transform: translate(0, -100vh) scale(1); opacity: 0; }
+}
+@keyframes bolha-sobe-pop {
+  0% { transform: translate(0, 14vh) scale(0.92); opacity: 0; box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+  12% { opacity: var(--op, 0.35); }
+  60% { transform: translate(var(--sway, 0), -40vh) scale(1.02); opacity: var(--op, 0.35); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5); }
+  72% { transform: translate(var(--sway, 0), -45vh) scale(1.5); opacity: 0; box-shadow: 0 0 0 14px rgba(255, 255, 255, 0); } /* estoura: anel se expande e some */
+  100% { transform: translate(var(--sway, 0), -45vh) scale(1.5); opacity: 0; }
+}
+
+/* Alerta pulsante âmbar — chama a atenção do gestor para liderados que ainda
+   NÃO foram convidados (sem conta vinculada). O anel segue o arredondamento. */
+@keyframes piscar-alerta {
+  0%, 100% { box-shadow: 0 0 0 2px #f59e0b, 0 0 0 0 rgba(245, 158, 11, 0); }
+  50% { box-shadow: 0 0 0 2px #f59e0b, 0 0 0 6px rgba(245, 158, 11, 0.30); }
+}
+.piscar-alerta {
+  animation: piscar-alerta 1.5s ease-in-out infinite;
+}
+
+/* Balançada do sino quando há notificações novas (toque lúdico). */
+@keyframes balancar {
+  0%, 100% { transform: rotate(0); }
+  15% { transform: rotate(14deg); }
+  30% { transform: rotate(-12deg); }
+  45% { transform: rotate(8deg); }
+  60% { transform: rotate(-6deg); }
+  75% { transform: rotate(3deg); }
+}
+
+/* Respeita quem prefere menos movimento: mostra tudo sem animar */
+@media (prefers-reduced-motion: reduce) {
+  .animar-surgir,
+  .animar-pop,
+  .animar-acenar,
+  .animar-flutuar-a,
+  .animar-flutuar-b,
+  .animar-flutuar-c {
+    animation: none;
+  }
+  /* O alerta para de piscar, mas mantém o anel âmbar estático (ainda avisa). */
+  .piscar-alerta {
+    animation: none;
+    box-shadow: 0 0 0 2px #f59e0b;
+  }
+  /* Sem movimento: esconde as bolhas para não poluir. */
+  .bolha-sobe,
+  .bolha-sobe-pop {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* Esconde a barra de rolagem (carrossel de equipes estilo Netflix) */
+.esconder-scroll {
+  scrollbar-width: none; /* Firefox */
+}
+.esconder-scroll::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Barra de rolagem fina e temática (cores da marca) — usada quando a lista de
+   liderados de uma equipe passa do limite e nas colunas do Monitor (Kanban). */
+.scroll-fino {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--color-juncao) transparent;
+}
+.scroll-fino::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+.scroll-fino::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-fino::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(180deg, var(--color-gestor), var(--color-liderado));
+  border-radius: 9999px;
+}
+.scroll-fino::-webkit-scrollbar-thumb:hover {
+  filter: brightness(1.1);
+}
+
+/* Padrão quadriculado do quadrante ALVO da Matrix9-Box durante o arraste */
+.quadriculado {
+  background-image:
+    linear-gradient(var(--color-juncao) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-juncao) 1px, transparent 1px);
+  background-size: 14px 14px;
+  opacity: 0.12;
+}
+
+/* Impressão / Exportar PDF: mostra só a área marcada (.area-impressao) */
+.titulo-impressao {
+  display: none;
+}
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .area-impressao,
+  .area-impressao * {
+    visibility: visible;
+  }
+  .area-impressao {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 8px 16px;
+  }
+  .titulo-impressao {
+    display: block;
+    margin-bottom: 12px;
+  }
+  .nao-imprimir {
+    display: none !important;
+  }
+}
+
+/* Barra de rolagem no tom da paleta */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-borda);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
