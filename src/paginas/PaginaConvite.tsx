@@ -150,6 +150,7 @@ export function PaginaConvite() {
           onChange={setSenha}
           placeholder="mínimo 6 caracteres"
           autoComplete="new-password"
+          revelavel
         />
 
         {erro && (

@@ -380,7 +380,7 @@ export function PaginaRegistro() {
           </div>
           <Campo tamanho="grande" rotulo="Seu nome" valor={nome} onChange={setNome} placeholder="Como quer ser chamado" autoComplete="name" erro={errosCampos.nome} />
           <Campo tamanho="grande" rotulo="E-mail" tipo="email" valor={email} onChange={setEmail} placeholder="voce@empresa.com" autoComplete="email" erro={errosCampos.email} />
-          <Campo tamanho="grande" rotulo="Senha" tipo="password" valor={senha} onChange={setSenha} placeholder="crie uma senha forte" autoComplete="new-password" />
+          <Campo tamanho="grande" rotulo="Senha" tipo="password" valor={senha} onChange={setSenha} placeholder="crie uma senha forte" autoComplete="new-password" revelavel />
           <RequisitosSenha senha={senha} />
           {erroBox}
           <CampoRecaptcha onToken={setTokenRecaptcha} />
@@ -535,7 +535,7 @@ export function PaginaRegistro() {
           </div>
           <Campo tamanho="grande" rotulo="Seu nome" valor={nome} onChange={setNome} placeholder="Como quer ser chamado" autoComplete="name" erro={errosCampos.nome} />
           <Campo tamanho="grande" rotulo="E-mail" tipo="email" valor={email} onChange={setEmail} placeholder="rh@empresa.com" autoComplete="email" erro={errosCampos.email} />
-          <Campo tamanho="grande" rotulo="Senha" tipo="password" valor={senha} onChange={setSenha} placeholder="crie uma senha forte" autoComplete="new-password" />
+          <Campo tamanho="grande" rotulo="Senha" tipo="password" valor={senha} onChange={setSenha} placeholder="crie uma senha forte" autoComplete="new-password" revelavel />
           <RequisitosSenha senha={senha} />
           {erroBox}
           <CampoRecaptcha onToken={setTokenRecaptcha} />
@@ -578,7 +578,7 @@ export function PaginaRegistro() {
           >
             <Campo rotulo="" valor={gNome} onChange={setGNome} placeholder="Nome do gestor" />
             <Campo rotulo="" tipo="email" valor={gEmail} onChange={setGEmail} placeholder="gestor@empresa.com" erro={gEmailInvalido ? 'E-mail inválido (ex.: nome@empresa.com)' : undefined} />
-            <Campo rotulo="" tipo="password" valor={gSenha} onChange={setGSenha} placeholder="Senha inicial (forte)" autoComplete="new-password" />
+            <Campo rotulo="" tipo="password" valor={gSenha} onChange={setGSenha} placeholder="Senha inicial (forte)" autoComplete="new-password" revelavel />
             <button
               type="submit"
               disabled={!gNome.trim() || !EMAIL_RE.test(gEmail.trim()) || !senhaForte(gSenha)}

@@ -3,7 +3,7 @@
 //            mensagens de erro e um ícone opcional à esquerda. Componente
 //            "controlado": o valor e o onChange vêm de quem usa.
 
-import { useId } from 'react'
+import { useId, useState } from 'react'
 import type { ReactNode } from 'react'
 
 interface CampoProps {
@@ -19,6 +19,8 @@ interface CampoProps {
   tamanho?: 'normal' | 'grande'
   // Campo apenas para leitura (ex.: e-mail já definido no convite).
   somenteLeitura?: boolean
+  // revelavel mostra o "olho" para ver/ocultar a senha (só faz sentido em tipo=password).
+  revelavel?: boolean
 }
 
 export function Campo({
@@ -32,10 +34,16 @@ export function Campo({
   autoComplete,
   tamanho = 'normal',
   somenteLeitura = false,
+  revelavel = false,
 }: CampoProps) {
   // useId gera um id único para ligar <label> e <input> (acessibilidade).
   const id = useId()
   const grande = tamanho === 'grande'
+
+  // "Olho": só quando pedido e o campo é de senha. Alterna o type entre password e text.
+  const [mostrar, setMostrar] = useState(false)
+  const podeRevelar = revelavel && tipo === 'password'
+  const tipoInput = podeRevelar && mostrar ? 'text' : tipo
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -54,7 +62,7 @@ export function Campo({
         )}
         <input
           id={id}
-          type={tipo}
+          type={tipoInput}
           value={valor}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
@@ -68,9 +76,23 @@ export function Campo({
             somenteLeitura ? 'cursor-default bg-areia-escura/40 text-tinta-suave' : 'bg-creme focus:border-juncao',
             grande ? 'px-5 py-4 text-lg' : 'px-4 py-3',
             icone ? (grande ? 'pl-12' : 'pl-10') : '',
+            podeRevelar ? (grande ? 'pr-14' : 'pr-12') : '',
             erro ? 'border-alerta' : 'border-borda',
           ].join(' ')}
         />
+        {podeRevelar && (
+          <button
+            type="button"
+            onClick={() => setMostrar((v) => !v)}
+            // tabIndex -1 para não atrapalhar o Tab e-mail → senha → entrar.
+            tabIndex={-1}
+            aria-label={mostrar ? 'Ocultar senha' : 'Mostrar senha'}
+            title={mostrar ? 'Ocultar senha' : 'Mostrar senha'}
+            className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-lg text-tinta-suave transition-colors hover:bg-areia-escura hover:text-tinta"
+          >
+            {mostrar ? '🙈' : '👁️'}
+          </button>
+        )}
       </div>
 
       {erro && <span className="text-sm font-medium text-alerta">{erro}</span>}

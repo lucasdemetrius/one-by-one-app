@@ -12,6 +12,7 @@ import { LayoutApp } from './LayoutApp'
 import { useAuth } from '@/recursos/auth/AuthContext'
 import { MANUAIS, LEGENDA } from '@/recursos/ajuda/dadosAjuda'
 import type { PapelAjuda, Manual } from '@/recursos/ajuda/dadosAjuda'
+import { ChatAjuda } from '@/componentes/ajuda/ChatAjuda'
 
 const ORDEM_ABAS: PapelAjuda[] = ['RH', 'LIDER', 'COLABORADOR']
 
@@ -166,6 +167,11 @@ export function PaginaAjuda() {
         <span className="text-xs font-bold uppercase tracking-widest text-white/80">Central de Ajuda</span>
         <h1 className="fonte-display text-2xl font-extrabold sm:text-3xl">Guias rápidos, sem enrolação 💜</h1>
         <p className="mt-1 max-w-xl text-sm text-white/90">Escolha seu papel e veja, em cartões curtos, como tirar o melhor do OneByOne.</p>
+      </div>
+
+      {/* Assistente de IA da ajuda — pergunte com suas palavras (funciona p/ todos os papéis). */}
+      <div className="mb-8">
+        <ChatAjuda />
       </div>
 
       {/* Abas por papel */}

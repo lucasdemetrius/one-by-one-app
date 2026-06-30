@@ -5,7 +5,7 @@
 //            drill-down de cada gestor (os 1:1 e a agenda dele). Os dados vêm das
 //            rotas /api/v1/rh/... — o backend garante o isolamento por tenant.
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { LayoutApp } from './LayoutApp'
@@ -108,7 +108,7 @@ function DrawerNovoGestor({ aoFechar, aoCriar }: { aoFechar: () => void; aoCriar
             </p>
             <Campo rotulo="Nome do gestor" valor={nome} onChange={setNome} placeholder="Como ele será chamado" />
             <Campo rotulo="E-mail" tipo="email" valor={email} onChange={setEmail} placeholder="gestor@empresa.com" erro={emailInvalido ? 'E-mail inválido' : undefined} />
-            <Campo rotulo="Senha inicial" tipo="password" valor={senha} onChange={setSenha} placeholder="mínimo 6 caracteres" autoComplete="new-password" />
+            <Campo rotulo="Senha inicial" tipo="password" valor={senha} onChange={setSenha} placeholder="mínimo 6 caracteres" autoComplete="new-password" revelavel />
             <Campo rotulo="Empresa (opcional)" valor={empresa} onChange={setEmpresa} placeholder="Ex.: Acme Ltda — a que o gestor vai usar" />
             {erro && (
               <div className="rounded-[var(--radius-suave)] border-2 border-alerta/30 bg-alerta/10 px-4 py-3 text-sm font-medium text-alerta">
@@ -308,17 +308,25 @@ export function PaginaRH() {
   const [abrirNovo, setAbrirNovo] = useState(false)
   const [detalhe, setDetalhe] = useState<GestorResumo | null>(null)
 
-  function recarregar() {
-    setCarregando(true)
+  // carregarDados busca os dados SEM mexer no "carregando" de forma síncrona (só nos callbacks
+  // das promises). É o que o efeito de montagem chama — o "carregando" já nasce true, então não
+  // há setState síncrono dentro do efeito (evita o aviso de cascading renders).
+  const carregarDados = useCallback(() => {
     listarGestores()
       .then((gs) => { setGestores(gs); setErro('') })
       .catch((e) => setErro(extrairMensagemErro(e)))
       .finally(() => setCarregando(false))
     // Evolução dos liderados por gestor (best-effort: não derruba o painel se falhar).
     acompanhamentoDosGestores().then(setEvolucao).catch(() => {})
+  }, [])
+
+  // recarregar é o refresh MANUAL (após criar um gestor): mostra o loading de novo e rebusca.
+  function recarregar() {
+    setCarregando(true)
+    carregarDados()
   }
 
-  useEffect(() => { recarregar() }, [])
+  useEffect(() => { carregarDados() }, [carregarDados])
 
   const primeiroNome = usuario?.nome?.split(' ')[0] ?? 'RH'
 

@@ -23,6 +23,7 @@ import { PaginaRHAgenda } from '@/paginas/PaginaRHAgenda'
 import { PaginaRHMatrix } from '@/paginas/PaginaRHMatrix'
 import { PaginaDossieLiderado } from '@/paginas/PaginaDossieLiderado'
 import { PaginaAjuda } from '@/paginas/PaginaAjuda'
+import { PaginaAdmin } from '@/paginas/PaginaAdmin'
 import { RotaProtegida } from '@/recursos/auth/RotaProtegida'
 import { useAuth } from '@/recursos/auth/AuthContext'
 import { SeletorTema } from '@/componentes/SeletorTema'
@@ -34,6 +35,7 @@ import { ConfirmacaoProvider } from '@/componentes/ui/Confirmacao'
 function PainelPorPapel() {
   const { usuario } = useAuth()
   if (usuario?.role === 'RH') return <Navigate to="/rh" replace />
+  if (usuario?.role === 'ADMIN') return <Navigate to="/admin" replace />
   return <PaginaPainel />
 }
 
@@ -41,6 +43,13 @@ function PainelPorPapel() {
 function RotaRH({ children }: { children: ReactNode }) {
   const { usuario } = useAuth()
   if (usuario && usuario.role !== 'RH') return <Navigate to="/painel" replace />
+  return <>{children}</>
+}
+
+// Garante que só o ADMIN da plataforma acessa as rotas de administração.
+function RotaAdmin({ children }: { children: ReactNode }) {
+  const { usuario } = useAuth()
+  if (usuario && usuario.role !== 'ADMIN') return <Navigate to="/painel" replace />
   return <>{children}</>
 }
 
@@ -128,6 +137,16 @@ export function App() {
           element={
             <RotaProtegida>
               <PaginaAjuda />
+            </RotaProtegida>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <RotaProtegida>
+              <RotaAdmin>
+                <PaginaAdmin />
+              </RotaAdmin>
             </RotaProtegida>
           }
         />

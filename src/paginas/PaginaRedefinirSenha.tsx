@@ -132,6 +132,7 @@ export function PaginaRedefinirSenha() {
             onChange={setNovaSenha}
             placeholder="••••••••"
             autoComplete="new-password"
+            revelavel
           />
           <RequisitosSenha senha={novaSenha} />
         </div>

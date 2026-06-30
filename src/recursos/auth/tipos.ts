@@ -7,7 +7,8 @@
 //   RH          → persona "RH" (raiz do tenant: cadastra e supervisiona os gestores)
 //   LIDER       → persona "Gestor"
 //   COLABORADOR → persona "Liderado"
-export type Papel = 'RH' | 'LIDER' | 'COLABORADOR'
+//   ADMIN       → administrador da PLATAFORMA (super-usuário global de monitoração)
+export type Papel = 'RH' | 'LIDER' | 'COLABORADOR' | 'ADMIN'
 
 // Dados do usuário autenticado (espelha UsuarioRespostaDTO do Go).
 export interface Usuario {

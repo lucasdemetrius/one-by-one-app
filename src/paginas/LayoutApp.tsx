@@ -16,6 +16,7 @@ import { AvatarUsuario } from '@/componentes/marca/AvatarUsuario'
 import { AssistenteIA } from '@/componentes/ia/AssistenteIA'
 import { SinoNotificacoes } from '@/componentes/notificacao/SinoNotificacoes'
 import { FundoVivo } from '@/componentes/estrutura/FundoVivo'
+import { WidgetFeedback } from '@/componentes/feedback/WidgetFeedback'
 
 // Item de navegação que fica destacado quando está na rota ativa.
 function ItemNav({ para, children, aoClicar, exato }: { para: string; children: ReactNode; aoClicar?: () => void; exato?: boolean }) {
@@ -43,16 +44,19 @@ export function LayoutApp({ children }: { children: ReactNode }) {
 
   const ehLider = usuario?.role === 'LIDER'
   const ehRH = usuario?.role === 'RH'
-  // A logo e o "Início" levam ao painel certo conforme o papel (RH tem painel próprio).
-  const paraInicio = ehRH ? '/rh' : '/painel'
+  const ehAdmin = usuario?.role === 'ADMIN'
+  // A logo e o "Início" levam ao painel certo conforme o papel (RH e ADMIN têm painel próprio).
+  const paraInicio = ehAdmin ? '/admin' : ehRH ? '/rh' : '/painel'
   // Links de navegação (filtrados por papel) — usados no desktop e no menu mobile.
-  const links: { para: string; rotulo: string; exato?: boolean }[] = ehRH
-    ? [{ para: '/rh', rotulo: 'Painel', exato: true }]
-    : [
-        { para: '/painel', rotulo: 'Início' },
-        ...(ehLider ? [{ para: '/agenda', rotulo: 'Agenda' }, { para: '/matrix9-box', rotulo: 'Matrix9-Box' }] : []),
-        { para: '/onebyone', rotulo: 'OneByOne ❤️' },
-      ]
+  const links: { para: string; rotulo: string; exato?: boolean }[] = ehAdmin
+    ? [{ para: '/admin', rotulo: 'Administração', exato: true }]
+    : ehRH
+      ? [{ para: '/rh', rotulo: 'Painel', exato: true }]
+      : [
+          { para: '/painel', rotulo: 'Início' },
+          ...(ehLider ? [{ para: '/agenda', rotulo: 'Agenda' }, { para: '/matrix9-box', rotulo: 'Matrix9-Box' }] : []),
+          { para: '/onebyone', rotulo: 'OneByOne ❤️' },
+        ]
 
   return (
     <div className="textura-papel relative min-h-screen bg-areia">
@@ -153,6 +157,9 @@ export function LayoutApp({ children }: { children: ReactNode }) {
 
       {/* Assistente de IA flutuante (só para o gestor) */}
       {usuario?.role === 'LIDER' && <AssistenteIA />}
+
+      {/* Widget de feedback flutuante (todos os usuários logados) */}
+      <WidgetFeedback />
     </div>
   )
 }
