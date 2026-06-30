@@ -26,11 +26,21 @@ export function Logo({ tamanho = 36, comTexto = true }: LogoProps) {
       </svg>
 
       {comTexto && (
-        <span
-          className="fonte-display font-semibold text-tinta"
-          style={{ fontSize: tamanho * 0.62 }}
-        >
-          One<span className="text-juncao">by</span>One
+        <span className="flex flex-col justify-center leading-none">
+          <span
+            className="fonte-display font-semibold text-tinta"
+            style={{ fontSize: tamanho * 0.62 }}
+          >
+            One<span className="text-juncao">by</span>One
+          </span>
+          {/* Assinatura discreta da marca/empresa — o domínio é teambox.com.br.
+              Posiciona o OneByOne como o PRODUTO e o TeamBox como a EMPRESA. */}
+          <span
+            className="tracking-wide text-tinta-suave"
+            style={{ fontSize: tamanho * 0.36, marginTop: tamanho * 0.08 }}
+          >
+            by <span className="font-bold">TeamBox</span>
+          </span>
         </span>
       )}
     </div>
