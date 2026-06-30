@@ -103,6 +103,9 @@ export function PaginaRegistro() {
   const lidEmailEhDoGestor = lidEmailNorm.length > 0 && lidEmailNorm === email.trim().toLowerCase()
   const lidEmailDuplicado =
     EMAIL_RE.test(lidEmail.trim()) && (lidEmailDuplicadoNaLista || lidEmailEhDoGestor)
+  // E-mail da CONTA (gestor ou RH — campo compartilhado) inválido em tempo real:
+  // avisa em vermelho enquanto a pessoa digita, antes mesmo de clicar em CONTINUAR.
+  const emailContaInvalido = email.trim().length > 0 && !EMAIL_RE.test(email.trim())
   const gEmailInvalido = gEmail.trim().length > 0 && !EMAIL_RE.test(gEmail.trim())
 
   // ── Passo 0: escolha do papel ───────────────────────────────────────────────
@@ -406,7 +409,7 @@ export function PaginaRegistro() {
             <p className="mt-2 text-tinta-suave">Você é o gestor do time. Leva menos de um minuto.</p>
           </div>
           <Campo tamanho="grande" rotulo="Seu nome" valor={nome} onChange={setNome} placeholder="Como quer ser chamado" autoComplete="name" erro={errosCampos.nome} />
-          <Campo tamanho="grande" rotulo="E-mail" tipo="email" valor={email} onChange={setEmail} placeholder="voce@empresa.com" autoComplete="email" erro={errosCampos.email} />
+          <Campo tamanho="grande" rotulo="E-mail" tipo="email" valor={email} onChange={setEmail} placeholder="voce@empresa.com" autoComplete="email" erro={emailContaInvalido ? 'E-mail inválido (ex.: nome@empresa.com)' : errosCampos.email} />
           <Campo tamanho="grande" rotulo="Senha" tipo="password" valor={senha} onChange={setSenha} placeholder="crie uma senha forte" autoComplete="new-password" revelavel />
           <RequisitosSenha senha={senha} />
           {erroBox}
@@ -576,7 +579,7 @@ export function PaginaRegistro() {
             </p>
           </div>
           <Campo tamanho="grande" rotulo="Seu nome" valor={nome} onChange={setNome} placeholder="Como quer ser chamado" autoComplete="name" erro={errosCampos.nome} />
-          <Campo tamanho="grande" rotulo="E-mail" tipo="email" valor={email} onChange={setEmail} placeholder="rh@empresa.com" autoComplete="email" erro={errosCampos.email} />
+          <Campo tamanho="grande" rotulo="E-mail" tipo="email" valor={email} onChange={setEmail} placeholder="rh@empresa.com" autoComplete="email" erro={emailContaInvalido ? 'E-mail inválido (ex.: nome@empresa.com)' : errosCampos.email} />
           <Campo tamanho="grande" rotulo="Senha" tipo="password" valor={senha} onChange={setSenha} placeholder="crie uma senha forte" autoComplete="new-password" revelavel />
           <RequisitosSenha senha={senha} />
           {erroBox}
