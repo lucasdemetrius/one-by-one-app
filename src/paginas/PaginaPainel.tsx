@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom'
 
 import { useAuth } from '@/recursos/auth/AuthContext'
 import { extrairMensagemErro } from '@/lib/api'
+import { copiarTexto } from '@/lib/clipboard'
 import { LayoutApp } from './LayoutApp'
 import { Botao } from '@/componentes/ui/Botao'
 import { Campo } from '@/componentes/ui/Campo'
@@ -56,12 +57,10 @@ function ModalConvite({
   const primeiroNome = colaborador.nome.split(' ')[0]
 
   async function copiar(texto: string, qual: string) {
-    try {
-      await navigator.clipboard.writeText(texto)
+    // Helper robusto: funciona também em HTTP/IP (fallback) e só confirma se copiou.
+    if (await copiarTexto(texto)) {
       setCopiado(qual)
       setTimeout(() => setCopiado(''), 1500)
-    } catch {
-      /* sem clipboard — ignora */
     }
   }
 

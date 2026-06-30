@@ -20,6 +20,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { Link } from 'react-router-dom'
 
 import { extrairMensagemErro } from '@/lib/api'
+import { copiarTexto } from '@/lib/clipboard'
 import { AvatarUsuario } from '@/componentes/marca/AvatarUsuario'
 import { Ajuda } from '@/componentes/ui/Ajuda'
 import { useConfirmar } from '@/componentes/ui/Confirmacao'
@@ -289,6 +290,9 @@ function EquipeColuna({
   const [email, setEmail] = useState('')
   const [telefone, setTelefone] = useState('')
   const [erro, setErro] = useState('')
+  // Nos CARTÕES, o formulário fica ESCONDIDO por padrão (só um botão) para a coluna
+  // respirar e não cortar os cards. Clicar no botão revela o form. (Na lista é sempre inline.)
+  const [adicionando, setAdicionando] = useState(false)
 
   const acento = ACENTOS[indice % ACENTOS.length]
   const ativos = liderados.filter((c) => c.ativo).length
@@ -409,8 +413,10 @@ function EquipeColuna({
       <div
         className={[
           'flex min-h-[3rem] flex-col gap-2',
-          // Nos CARTÕES, mostra ~3 liderados e o resto vira scroll fino temático.
-          lista ? '' : 'max-h-[19.5rem] overflow-y-auto scroll-fino pr-1',
+          // Nos CARTÕES, a coluna é bem mais alta (cabe ~6 liderados sem cortar). O
+          // -mx/px dá respiro lateral para a rolagem NÃO cortar a sombra e o brilho
+          // âmbar (piscar-alerta) dos cards; o -mx mantém os cards alinhados ao cabeçalho.
+          lista ? '' : 'max-h-[34rem] overflow-y-auto scroll-fino -mx-2.5 px-2.5 py-1',
         ].join(' ')}
       >
         {liderados.length === 0 ? (
@@ -424,13 +430,47 @@ function EquipeColuna({
         )}
       </div>
 
-      {/* Adicionar liderado nesta equipe (inline). Na lista, em linha horizontal. */}
-      <form onSubmit={adicionar} className={lista ? 'mt-1 flex flex-wrap items-start gap-2 border-t border-borda pt-3' : 'mt-1 flex flex-col gap-2 border-t border-borda pt-3'}>
+      {/* Rodapé do cartão. Nos CARTÕES, por padrão mostra só um BOTÃO (a coluna
+          respira e os cards não ficam espremidos); clicar revela o formulário.
+          Na LISTA, o formulário fica sempre inline numa linha horizontal. */}
+      {!lista && !adicionando ? (
+        <button
+          type="button"
+          onClick={() => setAdicionando(true)}
+          className="mt-1 w-full rounded-[var(--radius-suave)] border-2 border-dashed border-borda py-2.5 text-sm font-bold text-tinta-suave transition hover:border-juncao hover:bg-juncao/5 hover:text-juncao"
+        >
+          ➕ Adicionar liderado
+        </button>
+      ) : (
+      <form
+        onSubmit={adicionar}
+        className={
+          lista
+            ? 'mt-1 flex flex-wrap items-start gap-2 border-t border-borda pt-3'
+            : 'mt-2 flex flex-col gap-2.5 rounded-[var(--radius-suave)] border border-dashed border-borda bg-areia/50 p-3'
+        }
+      >
+        {!lista && (
+          <div className="flex items-center justify-between">
+            <span className="text-[0.7rem] font-bold uppercase tracking-wider text-tinta-suave">
+              ➕ Adicionar liderado
+            </span>
+            <button
+              type="button"
+              onClick={() => { setAdicionando(false); setErro('') }}
+              aria-label="Fechar"
+              title="Fechar"
+              className="text-tinta-suave/60 transition hover:text-alerta"
+            >
+              ✕
+            </button>
+          </div>
+        )}
         <input
           value={nome}
           onChange={(e) => setNome(e.target.value)}
           placeholder="Nome do liderado"
-          className={[lista ? 'min-w-40 flex-1' : 'w-full', 'rounded-[var(--radius-suave)] border-2 border-borda bg-areia px-3 py-1.5 text-sm text-tinta outline-none focus:border-juncao'].join(' ')}
+          className={[lista ? 'min-w-40 flex-1 py-1.5' : 'w-full py-2', 'rounded-[var(--radius-suave)] border-2 border-borda bg-areia px-3 text-sm text-tinta outline-none focus:border-juncao'].join(' ')}
         />
         <input
           value={email}
@@ -439,8 +479,8 @@ function EquipeColuna({
           placeholder="email@empresa.com"
           aria-invalid={emailInvalido}
           className={[
-            lista ? 'min-w-48 flex-1' : 'w-full',
-            'rounded-[var(--radius-suave)] border-2 bg-areia px-3 py-1.5 text-sm text-tinta outline-none transition-colors',
+            lista ? 'min-w-48 flex-1 py-1.5' : 'w-full py-2',
+            'rounded-[var(--radius-suave)] border-2 bg-areia px-3 text-sm text-tinta outline-none transition-colors',
             emailInvalido ? 'border-alerta focus:border-alerta' : 'border-borda focus:border-juncao',
           ].join(' ')}
         />
@@ -449,12 +489,12 @@ function EquipeColuna({
           onChange={(e) => setTelefone(e.target.value)}
           type="tel"
           placeholder="Telefone (opcional)"
-          className={[lista ? 'w-40' : 'w-full', 'rounded-[var(--radius-suave)] border-2 border-borda bg-areia px-3 py-1.5 text-sm text-tinta outline-none focus:border-juncao'].join(' ')}
+          className={[lista ? 'w-40 py-1.5' : 'w-full py-2', 'rounded-[var(--radius-suave)] border-2 border-borda bg-areia px-3 text-sm text-tinta outline-none focus:border-juncao'].join(' ')}
         />
         <button
           type="submit"
           disabled={!nome.trim() || !email.trim() || emailInvalido || criar.isPending}
-          className={[lista ? '' : 'w-full', 'rounded-[var(--radius-suave)] border-2 border-borda px-3 py-1.5 text-sm font-bold text-tinta transition hover:border-tinta disabled:opacity-50'].join(' ')}
+          className={[lista ? 'py-1.5' : 'w-full py-2', 'rounded-[var(--radius-suave)] border-2 border-borda px-3 text-sm font-bold text-tinta transition hover:border-tinta disabled:opacity-50'].join(' ')}
         >
           {criar.isPending ? 'Adicionando…' : '+ Adicionar'}
         </button>
@@ -462,6 +502,7 @@ function EquipeColuna({
         {emailInvalido && <span className="w-full text-xs font-medium text-alerta">⚠ E-mail inválido (ex.: nome@empresa.com)</span>}
         {erro && <span className="w-full text-xs font-medium text-alerta">{erro}</span>}
       </form>
+      )}
     </div>
   )
 }
@@ -543,10 +584,12 @@ function AcoesLiderado({
 // ── Contato do liderado (e-mail + telefone) com botão de copiar ───────────────
 function ContatoLiderado({ email, telefone }: { email: string; telefone: string | null }) {
   const [copiado, setCopiado] = useState('')
-  function copiar(valor: string, tipo: string) {
-    navigator.clipboard?.writeText(valor)
-    setCopiado(tipo)
-    setTimeout(() => setCopiado(''), 1200)
+  async function copiar(valor: string, tipo: string) {
+    // Só marca como copiado se a cópia realmente aconteceu (vide lib/clipboard).
+    if (await copiarTexto(valor)) {
+      setCopiado(tipo)
+      setTimeout(() => setCopiado(''), 1200)
+    }
   }
   const linha = 'flex items-center gap-1 text-xs text-tinta-suave'
   const btn = 'shrink-0 rounded px-1 text-tinta-suave/60 transition hover:text-juncao'

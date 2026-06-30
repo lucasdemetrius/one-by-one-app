@@ -79,7 +79,9 @@ export function WidgetFeedback() {
 
   return (
     <>
-      {/* Botão flutuante (canto inferior esquerdo — não colide com o assistente, à direita). */}
+      {/* Botão flutuante no canto inferior DIREITO, no rodapé. O assistente de IA (quando
+          existe, só p/ gestor) fica logo ACIMA dele (bottom-20); aqui ficamos no chão do
+          canto. Para quem não tem IA, é o único flutuante — limpo no canto. */}
       <motion.button
         type="button"
         onClick={() => setAberto(true)}
@@ -87,7 +89,7 @@ export function WidgetFeedback() {
         whileTap={{ scale: 0.94 }}
         aria-label="Enviar feedback"
         title="Conte o que você achou"
-        className="fixed bottom-5 left-5 z-[60] flex h-12 items-center gap-2 rounded-full border-2 border-borda bg-creme px-4 text-tinta shadow-[var(--shadow-flutuante)] hover:border-juncao"
+        className="fixed bottom-5 right-5 z-[60] flex h-12 items-center gap-2 rounded-full border-2 border-borda bg-creme px-4 text-tinta shadow-[var(--shadow-flutuante)] hover:border-juncao"
       >
         <span className="text-lg">💬</span>
         <span className="hidden text-sm font-bold sm:inline">Feedback</span>

@@ -247,8 +247,9 @@ export function AssistenteIA() {
 
   return (
     <>
-      {/* Botão flutuante (canto inferior DIREITO) */}
-      <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
+      {/* Botão flutuante (canto inferior DIREITO), um pouco acima do chão para o
+          botão de Feedback (bottom-5 right-5) caber LOGO ABAIXO dele, empilhados. */}
+      <div className="fixed bottom-20 right-5 z-50 flex flex-col items-end gap-3">
         {/* Dica quando a IA não está configurada */}
         <AnimatePresence>
           {mostrarDica && !temIA && (

@@ -8,6 +8,7 @@ import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 
 import { useAuth } from '@/recursos/auth/AuthContext'
+import { copiarTexto } from '@/lib/clipboard'
 import { useColaborador } from '@/recursos/time/hooks'
 import { LayoutApp } from './LayoutApp'
 import { TabuleiroPauta } from '@/componentes/pauta/TabuleiroPauta'
@@ -255,10 +256,11 @@ export function PaginaOneByOne() {
           {ehGestor && (
             <button
               type="button"
-              onClick={() => {
-                navigator.clipboard?.writeText(`${window.location.origin}/liderado/${id}`)
-                setCopiado(true)
-                setTimeout(() => setCopiado(false), 2000)
+              onClick={async () => {
+                if (await copiarTexto(`${window.location.origin}/liderado/${id}`)) {
+                  setCopiado(true)
+                  setTimeout(() => setCopiado(false), 2000)
+                }
               }}
               title="Copiar o link da sala para enviar ao liderado"
               className="rounded-full border-2 border-borda px-3 py-1 text-sm font-bold text-tinta transition hover:border-juncao hover:text-juncao"

@@ -95,6 +95,14 @@ export function PaginaRegistro() {
   const [empresaRH, setEmpresaRH] = useState('')
 
   const lidEmailInvalido = lidEmail.trim().length > 0 && !EMAIL_RE.test(lidEmail.trim())
+  // E-mail = uma conta: o e-mail do liderado não pode repetir na lista nem ser o da
+  // própria conta do gestor. Calculado em tempo real para avisar ANTES do "Concluir".
+  const lidEmailNorm = lidEmail.trim().toLowerCase()
+  const lidEmailDuplicadoNaLista =
+    lidEmailNorm.length > 0 && liderados.some((l) => l.email.toLowerCase() === lidEmailNorm)
+  const lidEmailEhDoGestor = lidEmailNorm.length > 0 && lidEmailNorm === email.trim().toLowerCase()
+  const lidEmailDuplicado =
+    EMAIL_RE.test(lidEmail.trim()) && (lidEmailDuplicadoNaLista || lidEmailEhDoGestor)
   const gEmailInvalido = gEmail.trim().length > 0 && !EMAIL_RE.test(gEmail.trim())
 
   // ── Passo 0: escolha do papel ───────────────────────────────────────────────
@@ -165,6 +173,18 @@ export function PaginaRegistro() {
 
   function adicionarLideradoNaLista() {
     if (!lidNome.trim() || !EMAIL_RE.test(lidEmail.trim()) || !lidEquipe) return
+    // Verifica JÁ no "+ Adicionar" (antes era só no Concluir, o que travava o gestor):
+    // não pode usar o e-mail da própria conta de gestor, nem repetir e-mail na lista.
+    // (Backstop do teclado Enter — o botão já fica desabilitado quando duplicado.)
+    if (lidEmailEhDoGestor) {
+      setErro('Esse é o e-mail da sua conta de gestor. Cada liderado precisa de um e-mail próprio.')
+      return
+    }
+    if (lidEmailDuplicadoNaLista) {
+      setErro('Você já adicionou este e-mail à lista. Cada liderado precisa de um e-mail próprio.')
+      return
+    }
+    setErro('')
     setLiderados((lista) => [
       ...lista,
       { nome: lidNome.trim(), email: lidEmail.trim(), equipeId: lidEquipe },
@@ -177,17 +197,24 @@ export function PaginaRegistro() {
   async function concluir() {
     setErro('')
     setCarregando(true)
+    // Cria um a um. Se algum falhar, mantém na lista só os que AINDA não foram criados
+    // (o que falhou + os não tentados). Assim um novo clique em "Concluir" não tenta
+    // recriar os que já entraram — antes, isso obrigava o gestor a apagar todo mundo.
+    const pendentes = [...liderados]
     try {
-      for (const l of liderados) {
+      while (pendentes.length > 0) {
+        const l = pendentes[0]
         await criarColaborador({
           organizacao_id: orgId,
           equipe_id: l.equipeId,
           nome: l.nome,
           email: l.email,
         })
+        pendentes.shift() // criado com sucesso → sai da fila
       }
       comemorarEIr()
     } catch (e) {
+      setLiderados(pendentes) // sobra só o que falhou + o que não foi tentado
       setErro(humanizarErro(e))
       setCarregando(false)
     }
@@ -458,7 +485,22 @@ export function PaginaRegistro() {
             className="flex flex-col gap-3 rounded-[var(--radius-cartao)] border-2 border-dashed border-borda bg-creme/40 p-4"
           >
             <Campo rotulo="" valor={lidNome} onChange={setLidNome} placeholder="Nome do liderado" />
-            <Campo rotulo="" tipo="email" valor={lidEmail} onChange={setLidEmail} placeholder="email@empresa.com" erro={lidEmailInvalido ? 'E-mail inválido (ex.: nome@empresa.com)' : undefined} />
+            <Campo
+              rotulo=""
+              tipo="email"
+              valor={lidEmail}
+              onChange={setLidEmail}
+              placeholder="email@empresa.com"
+              erro={
+                lidEmailInvalido
+                  ? 'E-mail inválido (ex.: nome@empresa.com)'
+                  : lidEmailEhDoGestor
+                    ? 'Esse é o e-mail da sua conta de gestor — use outro.'
+                    : lidEmailDuplicadoNaLista
+                      ? 'Você já adicionou este e-mail.'
+                      : undefined
+              }
+            />
             {equipesCriadas.length > 1 && (
               <select
                 value={lidEquipe}
@@ -472,7 +514,7 @@ export function PaginaRegistro() {
             )}
             <button
               type="submit"
-              disabled={!lidNome.trim() || !EMAIL_RE.test(lidEmail.trim()) || !lidEquipe}
+              disabled={!lidNome.trim() || !EMAIL_RE.test(lidEmail.trim()) || lidEmailDuplicado || !lidEquipe}
               className="rounded-[var(--radius-suave)] border-2 border-borda px-4 py-2.5 text-sm font-bold text-tinta transition hover:border-juncao disabled:opacity-40"
             >
               + Adicionar liderado

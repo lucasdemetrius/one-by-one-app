@@ -1,19 +1,28 @@
 // Arquivo: src/componentes/SeletorTema.tsx
 // Descrição: Botão flutuante (canto inferior direito) que abre as opções de tema.
-//            Fica logo ACIMA do botão de chat de IA (empilhados no mesmo canto).
-//            A escolha é lembrada entre sessões.
+//            É o TOPO da pilha de flutuantes do canto. A altura se ajusta sozinha
+//            conforme quem mais está na tela, para nunca sobrepor nem deixar buraco:
+//              • deslogado (login): Feedback/IA não existem → tema desce p/ o chão (bottom-5)
+//              • gestor logado: Feedback (bottom-5) + IA (bottom-20) → tema sobe (bottom-36)
+//              • outros logados: só Feedback (bottom-5) → tema fica logo acima (bottom-20)
+//            A escolha de tema é lembrada entre sessões.
 
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import { TEMAS, useTema } from '@/recursos/tema/TemaContext'
+import { useAuth } from '@/recursos/auth/AuthContext'
 
 export function SeletorTema() {
   const { tema, definirTema } = useTema()
+  const { usuario } = useAuth()
   const [aberto, setAberto] = useState(false)
 
+  // Posição vertical conforme a pilha de flutuantes (ver descrição no topo do arquivo).
+  const posicao = !usuario ? 'bottom-5' : usuario.role === 'LIDER' ? 'bottom-36' : 'bottom-20'
+
   return (
-    <div className="fixed bottom-24 right-5 z-50 flex flex-col items-end gap-3">
+    <div className={`fixed ${posicao} right-5 z-50 flex flex-col items-end gap-3`}>
       {/* Lista de temas (aparece ao abrir) */}
       <AnimatePresence>
         {aberto && (
