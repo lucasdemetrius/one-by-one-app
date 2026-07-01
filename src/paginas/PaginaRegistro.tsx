@@ -63,6 +63,10 @@ export function PaginaRegistro() {
 
   // Passo 0 — quem é você?
   const [papel, setPapel] = useState<PapelEscolhido>('')
+  // O BotaoGoogle está mostrando a pergunta de papel dele (conta nova via Google)?
+  // Enquanto sim, escondemos os cartões Gestor/RH da própria página — são quase
+  // idênticos e clicar no errado descartaria o login do Google já autenticado.
+  const [perguntandoGoogle, setPerguntandoGoogle] = useState(false)
 
   const [passo, setPasso] = useState<1 | 2 | 3>(1)
   const [carregando, setCarregando] = useState(false)
@@ -323,57 +327,70 @@ export function PaginaRegistro() {
     return (
       <LayoutAuth chamada="Veja o OneByOne em ação">
         <div className="flex flex-col gap-6">
-          <div>
-            <h1 className="fonte-display text-3xl font-extrabold text-tinta sm:text-4xl">
-              Como você vai usar?
-            </h1>
-            <p className="mt-2 text-tinta-suave">Isso ajuda a montar tudo do seu jeito.</p>
-          </div>
+          {/* Enquanto o BotaoGoogle pergunta o papel (conta nova via Google), os
+              cartões da página somem — senão ficariam 5 cartões quase iguais e
+              clicar no errado descartaria o login do Google já feito. */}
+          {!perguntandoGoogle && (
+            <>
+              <div>
+                <h1 className="fonte-display text-3xl font-extrabold text-tinta sm:text-4xl">
+                  Como você vai usar?
+                </h1>
+                <p className="mt-2 text-tinta-suave">Isso ajuda a montar tudo do seu jeito.</p>
+              </div>
 
-          {/* Cartão: Gestor */}
-          <button
-            type="button"
-            onClick={() => escolher('GESTOR')}
-            className="group flex items-center gap-4 rounded-[var(--radius-cartao)] border-2 border-borda bg-creme p-5 text-left transition hover:border-juncao hover:shadow-md"
-          >
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[var(--radius-grande)] bg-juncao/10 text-3xl">
-              🧭
-            </span>
-            <span className="min-w-0">
-              <span className="block fonte-display text-xl font-extrabold text-tinta">Sou Gestor</span>
-              <span className="block text-sm text-tinta-suave">
-                Gerencio meu time e faço os 1:1 com meus liderados.
-              </span>
-            </span>
-          </button>
+              {/* Cartão: Gestor */}
+              <button
+                type="button"
+                onClick={() => escolher('GESTOR')}
+                className="group flex items-center gap-4 rounded-[var(--radius-cartao)] border-2 border-borda bg-creme p-5 text-left transition hover:border-juncao hover:shadow-md"
+              >
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[var(--radius-grande)] bg-juncao/10 text-3xl">
+                  🧭
+                </span>
+                <span className="min-w-0">
+                  <span className="block fonte-display text-xl font-extrabold text-tinta">Sou Gestor</span>
+                  <span className="block text-sm text-tinta-suave">
+                    Gerencio meu time e faço os 1:1 com meus liderados.
+                  </span>
+                </span>
+              </button>
 
-          {/* Cartão: RH */}
-          <button
-            type="button"
-            onClick={() => escolher('RH')}
-            className="group flex items-center gap-4 rounded-[var(--radius-cartao)] border-2 border-borda bg-creme p-5 text-left transition hover:border-juncao hover:shadow-md"
-          >
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[var(--radius-grande)] bg-liderado/15 text-3xl">
-              🏛️
-            </span>
-            <span className="min-w-0">
-              <span className="block fonte-display text-xl font-extrabold text-tinta">Sou RH</span>
-              <span className="block text-sm text-tinta-suave">
-                Cadastro os gestores da empresa e acompanho todos eles.
-              </span>
-            </span>
-          </button>
+              {/* Cartão: RH */}
+              <button
+                type="button"
+                onClick={() => escolher('RH')}
+                className="group flex items-center gap-4 rounded-[var(--radius-cartao)] border-2 border-borda bg-creme p-5 text-left transition hover:border-juncao hover:shadow-md"
+              >
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[var(--radius-grande)] bg-liderado/15 text-3xl">
+                  🏛️
+                </span>
+                <span className="min-w-0">
+                  <span className="block fonte-display text-xl font-extrabold text-tinta">Sou RH</span>
+                  <span className="block text-sm text-tinta-suave">
+                    Cadastro os gestores da empresa e acompanho todos eles.
+                  </span>
+                </span>
+              </button>
+            </>
+          )}
 
-          {/* Atalho: criar conta com Google (cria um Gestor e já entra). Só aparece
-              se o login com Google estiver ligado no backend. */}
-          <BotaoGoogle onSucesso={() => navegar('/painel')} texto="signup_with" />
+          {/* Criar conta com Google. Conta nova → o próprio botão pergunta o papel
+              (Gestor/RH/Liderado); conta existente → entra direto. */}
+          <BotaoGoogle
+            onSucesso={() => navegar('/painel')}
+            texto="signup_with"
+            aoPerguntarPapel={setPerguntandoGoogle}
+          />
 
-          <p className="text-center text-base text-tinta-suave">
-            Já tem conta?{' '}
-            <Link to="/entrar" className="font-bold text-juncao hover:underline">
-              Entrar
-            </Link>
-          </p>
+          {!perguntandoGoogle && (
+            <p className="text-center text-base text-tinta-suave">
+              Já tem conta?{' '}
+              <Link to="/entrar" className="font-bold text-juncao hover:underline">
+                Entrar
+              </Link>
+            </p>
+          )}
         </div>
       </LayoutAuth>
     )

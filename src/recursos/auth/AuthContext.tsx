@@ -18,6 +18,7 @@ import type { ReactNode } from 'react'
 
 import { CHAVE_TOKEN } from '@/lib/api'
 import { fazerLogin, loginGoogle, registrarConta } from './authApi'
+import type { PapelGoogle } from './authApi'
 import type {
   CredenciaisLogin,
   DadosRegistro,
@@ -35,7 +36,9 @@ interface ContextoAuth {
   carregando: boolean
   entrar: (credenciais: CredenciaisLogin, tokenRecaptcha?: string) => Promise<Usuario>
   // entrarComGoogle troca o credential (ID token do Google) por uma sessão e loga.
-  entrarComGoogle: (credential: string) => Promise<Usuario>
+  // Devolve NULL quando o e-mail ainda não tem conta e falta escolher o papel —
+  // a tela pergunta (Gestor/RH/Liderado) e chama de novo com o `papel`.
+  entrarComGoogle: (credential: string, papel?: PapelGoogle) => Promise<Usuario | null>
   cadastrar: (dados: DadosRegistro, tokenRecaptcha?: string) => Promise<Usuario>
   // aplicaSessao grava token + usuário direto (ex.: ao aceitar um convite,
   // que já devolve a sessão pronta, sem novo login).
@@ -85,13 +88,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   // entrarComGoogle: autentica via Google (mesmo desfecho do entrar por senha).
-  const entrarComGoogle = useCallback(async (credential: string) => {
+  // Conta nova sem papel → o backend devolve precisa_papel e aqui vira NULL (a tela
+  // pergunta "como você vai usar?" e chama de novo com o papel escolhido).
+  const entrarComGoogle = useCallback(async (credential: string, papel?: PapelGoogle) => {
     setCarregando(true)
     try {
-      const { token, usuario: logado } = await loginGoogle(credential)
-      localStorage.setItem(CHAVE_TOKEN, token)
-      setUsuario(logado)
-      return logado
+      const resposta = await loginGoogle(credential, papel)
+      if (resposta.precisa_papel || !resposta.token || !resposta.usuario) return null
+      localStorage.setItem(CHAVE_TOKEN, resposta.token)
+      setUsuario(resposta.usuario)
+      return resposta.usuario
     } finally {
       setCarregando(false)
     }

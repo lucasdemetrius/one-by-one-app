@@ -28,12 +28,24 @@ export async function registrarConta(dados: DadosRegistro, tokenRecaptcha?: stri
   return extrairDados<Usuario>(resposta.data)
 }
 
+// Papéis possíveis para uma conta NOVA criada via Google (pergunta "como você vai usar?").
+export type PapelGoogle = 'LIDER' | 'RH' | 'COLABORADOR'
+
+// Resposta do login com Google: ou a sessão vem pronta (token + usuario), ou
+// precisa_papel=true — o e-mail ainda não tem conta e é preciso perguntar o papel.
+export interface RespostaLoginGoogle {
+  precisa_papel: boolean
+  token?: string
+  usuario?: Usuario
+}
+
 // loginGoogle troca o "credential" (ID token do Google) por uma sessão do OneByOne.
-// Se o e-mail ainda não tiver conta, o backend cria uma conta de Gestor.
+// Conta existente → entra nela. Conta nova → mandar também o `role` escolhido
+// (sem role, o backend devolve precisa_papel=true para o front perguntar).
 // Rota: POST /api/v1/auth/google
-export async function loginGoogle(credential: string): Promise<RespostaLogin> {
-  const resposta = await api.post('/auth/google', { credential })
-  return extrairDados<RespostaLogin>(resposta.data)
+export async function loginGoogle(credential: string, role?: PapelGoogle): Promise<RespostaLoginGoogle> {
+  const resposta = await api.post('/auth/google', role ? { credential, role } : { credential })
+  return extrairDados<RespostaLoginGoogle>(resposta.data)
 }
 
 // enviarFotoPerfil faz upload da foto de perfil do usuário (multipart) e devolve
