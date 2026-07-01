@@ -49,6 +49,7 @@ export function PaginaConteudoArtigo() {
         descricao={artigo.resumo}
         caminho={`/conteudo/${artigo.slug}`}
         tipo="article"
+        imagem={artigo.imagem}
         atualizadoEm={artigo.atualizadoEm}
         publicadoEm={artigo.atualizadoEm}
         jsonLd={[jsonLdArtigo, jsonLdFaq]}
@@ -67,6 +68,19 @@ export function PaginaConteudoArtigo() {
         </h1>
         <p className="mt-3 text-lg text-tinta-suave">{artigo.resumo}</p>
         <p className="mt-2 text-sm text-tinta-suave">{artigo.leituraMin} min de leitura</p>
+
+        {/* Capa do artigo: imagem real se houver; senão o gradiente com o ícone */}
+        {artigo.imagem ? (
+          <img
+            src={artigo.imagem}
+            alt={artigo.titulo}
+            className="mt-6 h-56 w-full rounded-[var(--radius-cartao)] object-cover sm:h-72"
+          />
+        ) : (
+          <div className="gradiente-marca mt-6 flex h-40 items-center justify-center rounded-[var(--radius-cartao)] text-6xl sm:h-56">
+            {artigo.emoji}
+          </div>
+        )}
 
         <div className="mt-8 flex flex-col gap-8">
           {artigo.secoes.map((s) => (

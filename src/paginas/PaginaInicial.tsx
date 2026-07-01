@@ -13,6 +13,7 @@ import { CarrosselDemo } from '@/componentes/CarrosselDemo'
 import { PainelCoop } from '@/componentes/PainelCoop'
 import { CartaoValor } from '@/componentes/CartaoValor'
 import { VALORES } from '@/recursos/conteudo/valores'
+import { ARTIGOS } from '@/recursos/conteudo/artigos'
 
 // Passos de "como funciona".
 const PASSOS = [
@@ -86,6 +87,12 @@ export function PaginaInicial() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Logo />
           <nav className="flex items-center gap-2 sm:gap-4">
+            <Link
+              to="/conteudo"
+              className="hidden rounded-[var(--radius-suave)] px-4 py-2 text-sm font-bold text-tinta transition-colors hover:bg-areia-escura sm:block"
+            >
+              Conteúdo
+            </Link>
             <Link
               to="/entrar"
               className="rounded-[var(--radius-suave)] px-4 py-2 text-sm font-bold text-tinta transition-colors hover:bg-areia-escura"
@@ -340,6 +347,56 @@ export function PaginaInicial() {
         </div>
       </section>
 
+      {/* ── Central de conteúdo (SEO + valor) ───────────────────────────────── */}
+      <section className="relative py-24">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="mx-auto mb-14 max-w-2xl text-center">
+            <span className="text-sm font-bold uppercase tracking-wider text-juncao">
+              Aprenda com a gente
+            </span>
+            <h2 className="fonte-display mt-3 text-4xl font-extrabold tracking-tight text-tinta">
+              Guias de gestão de pessoas
+            </h2>
+            <p className="mt-3 text-lg text-tinta-suave">
+              1:1, matriz 9-box, PDI e feedback — conteúdo prático para liderar de perto.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {ARTIGOS.slice(0, 3).map((a) => (
+              <Link
+                key={a.slug}
+                to={`/conteudo/${a.slug}`}
+                className="group flex flex-col overflow-hidden rounded-[var(--radius-cartao)] border border-borda bg-creme shadow-[var(--shadow-cartao)] transition hover:border-juncao hover:shadow-[var(--shadow-flutuante)]"
+              >
+                {/* Capa: imagem real se houver; senão um gradiente com o ícone do tema */}
+                {a.imagem ? (
+                  <img src={a.imagem} alt={a.titulo} loading="lazy" className="h-40 w-full object-cover" />
+                ) : (
+                  <div className="gradiente-marca flex h-40 items-center justify-center text-5xl">{a.emoji}</div>
+                )}
+                <div className="flex flex-1 flex-col p-6">
+                  <span className="text-xs font-bold uppercase tracking-wider text-juncao">{a.categoria}</span>
+                  <h3 className="fonte-display mt-1 text-xl font-bold text-tinta group-hover:text-juncao">
+                    {a.titulo}
+                  </h3>
+                  <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-tinta-suave">{a.resumo}</p>
+                  <span className="mt-4 inline-block text-sm font-bold text-juncao group-hover:underline">
+                    mais →
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="mt-10 text-center">
+            <Link to="/conteudo" className="font-bold text-juncao hover:underline">
+              Ver toda a central de conteúdo →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ── Chamada final ───────────────────────────────────────────────────── */}
       <section className="relative px-6 py-24">
         <div className="gradiente-marca relative mx-auto max-w-5xl overflow-hidden rounded-[var(--radius-grande)] px-8 py-16 text-center shadow-[var(--shadow-flutuante)]">
@@ -371,6 +428,7 @@ export function PaginaInicial() {
               Produto
             </span>
             <ul className="flex flex-col gap-2 text-sm text-tinta">
+              <li><Link to="/conteudo" className="hover:text-juncao">Central de conteúdo</Link></li>
               <li><a href="#" className="hover:text-juncao">Recursos</a></li>
               <li><a href="#" className="hover:text-juncao">O 1:1</a></li>
               <li><a href="#" className="hover:text-juncao">Perguntas frequentes</a></li>

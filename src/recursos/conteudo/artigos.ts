@@ -21,6 +21,11 @@ export interface Artigo {
   titulo: string
   resumo: string
   categoria: string
+  // emoji: capa do card/artigo quando não há imagem real (fundo em gradiente).
+  emoji: string
+  // imagem: capa real opcional (ex.: '/conteudo/matriz-9-box.jpg' em public/). Quando
+  // preenchida, aparece nos cards, no topo do artigo e como imagem de compartilhamento.
+  imagem?: string
   palavrasChave: string[]
   atualizadoEm: string // ISO (AAAA-MM-DD)
   leituraMin: number
@@ -31,6 +36,7 @@ export interface Artigo {
 export const ARTIGOS: Artigo[] = [
   {
     slug: 'o-que-e-1-1-one-on-one',
+    emoji: '🤝',
     titulo: 'O que é 1:1 (one-on-one) e por que toda liderança deveria fazer',
     resumo:
       'A reunião 1:1 (one-on-one) é a conversa periódica entre líder e liderado. Entenda o que é, para que serve e como ela melhora engajamento, retenção e desempenho.',
@@ -95,6 +101,7 @@ export const ARTIGOS: Artigo[] = [
   },
   {
     slug: 'matriz-9-box-nine-box',
+    emoji: '📊',
     titulo: 'Matriz 9-Box (Nine Box): o guia completo de desempenho e potencial',
     resumo:
       'A matriz 9-box (nine box) cruza desempenho e potencial em 9 quadrantes para mapear talentos, riscos e sucessão. Veja como montar, ler e usar a sua.',
@@ -158,6 +165,7 @@ export const ARTIGOS: Artigo[] = [
   },
   {
     slug: 'como-fazer-reuniao-1-1',
+    emoji: '💬',
     titulo: 'Como conduzir uma reunião 1:1: roteiro, perguntas e erros a evitar',
     resumo:
       'Um roteiro prático de reunião 1:1: como se preparar, perguntas poderosas para fazer, como registrar combinados e os erros que esvaziam o encontro.',
@@ -221,6 +229,7 @@ export const ARTIGOS: Artigo[] = [
   },
   {
     slug: 'pdi-plano-de-desenvolvimento-individual',
+    emoji: '🌱',
     titulo: 'PDI: como montar um Plano de Desenvolvimento Individual que funciona',
     resumo:
       'O PDI (Plano de Desenvolvimento Individual) organiza objetivos, prazos e ações de crescimento de cada pessoa. Veja como criar um PDI prático e acompanhá-lo.',
@@ -284,6 +293,7 @@ export const ARTIGOS: Artigo[] = [
   },
   {
     slug: 'feedback-continuo-como-dar-e-receber',
+    emoji: '🗣️',
     titulo: 'Feedback contínuo: como dar e receber feedback no dia a dia',
     resumo:
       'Feedback contínuo é dar retorno perto do fato, não só na avaliação anual. Veja técnicas práticas (SBI, feed-forward) para dar e receber feedback sem desgaste.',

@@ -43,16 +43,26 @@ export function PaginaConteudo() {
           <Link
             key={a.slug}
             to={`/conteudo/${a.slug}`}
-            className="group rounded-[var(--radius-cartao)] border-2 border-borda bg-creme p-5 transition hover:border-juncao hover:shadow-[var(--shadow-cartao)]"
+            className="group flex gap-4 overflow-hidden rounded-[var(--radius-cartao)] border-2 border-borda bg-creme transition hover:border-juncao hover:shadow-[var(--shadow-cartao)]"
           >
-            <span className="text-xs font-bold uppercase tracking-wider text-juncao">{a.categoria}</span>
-            <h2 className="fonte-display mt-1 text-xl font-extrabold text-tinta group-hover:text-juncao">
-              {a.titulo}
-            </h2>
-            <p className="mt-2 text-tinta-suave">{a.resumo}</p>
-            <span className="mt-3 inline-block text-sm font-bold text-tinta-suave">
-              {a.leituraMin} min de leitura →
-            </span>
+            {/* Capa (imagem real ou gradiente com ícone) — escondida no celular */}
+            {a.imagem ? (
+              <img src={a.imagem} alt={a.titulo} loading="lazy" className="hidden w-40 shrink-0 self-stretch object-cover sm:block" />
+            ) : (
+              <div className="gradiente-marca hidden w-40 shrink-0 items-center justify-center self-stretch text-4xl sm:flex">
+                {a.emoji}
+              </div>
+            )}
+            <div className="flex-1 p-5">
+              <span className="text-xs font-bold uppercase tracking-wider text-juncao">{a.categoria}</span>
+              <h2 className="fonte-display mt-1 text-xl font-extrabold text-tinta group-hover:text-juncao">
+                {a.titulo}
+              </h2>
+              <p className="mt-2 text-tinta-suave">{a.resumo}</p>
+              <span className="mt-3 inline-block text-sm font-bold text-tinta-suave">
+                {a.leituraMin} min de leitura →
+              </span>
+            </div>
           </Link>
         ))}
       </div>
