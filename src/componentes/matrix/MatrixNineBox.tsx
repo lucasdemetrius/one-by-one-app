@@ -161,13 +161,9 @@ function Ficha({
         layout
         layoutId={colaborador.id}
         transition={{ type: 'spring', stiffness: 500, damping: 34 }}
-        // Passar o mouse por cima faz o card "pular" um pouco maior (não durante o
-        // arraste — aí quem cresce é o quadrante alvo). whileTap dá um feedback ao clicar.
-        whileHover={isDragging ? undefined : { scale: 1.12, y: -2 }}
-        whileTap={isDragging ? undefined : { scale: 1.06 }}
         {...attributes}
         {...listeners}
-        className={['relative cursor-grab touch-none select-none active:cursor-grabbing', isDragging ? 'opacity-30' : 'hover:z-10'].join(' ')}
+        className={['cursor-grab touch-none select-none active:cursor-grabbing', isDragging ? 'opacity-30' : ''].join(' ')}
       >
         <FichaVisual colaborador={colaborador} />
       </motion.div>
@@ -215,11 +211,13 @@ function Celula({
       style={{ backgroundColor: corZona(desempenho, potencial) }}
       className={[
         'relative flex min-h-24 flex-col gap-2 overflow-hidden rounded-[var(--radius-cartao)] border-2 p-1.5 transition-all duration-150 sm:min-h-32 sm:p-3',
-        // Alvo: cresce e balança (alvo-vivo) e sobe no empilhamento (z-10) para
-        // "pular" sobre os vizinhos, deixando claro onde o liderado vai cair.
-        alvo ? 'z-10 border-juncao ring-2 ring-juncao alvo-vivo' : 'border-transparent',
-        // Demais quadrantes: recuam e desfocam para o foco ir todo pro alvo.
-        apagado ? 'scale-[0.97] opacity-30 blur-[3px]' : 'opacity-100',
+        // FORA do arraste: o quadrante CRESCE e se destaca ao passar o mouse por cima
+        // (sem precisar arrastar ninguém). É o efeito que o usuário pediu.
+        !arrastando ? 'hover:z-10 hover:scale-[1.04] hover:border-juncao' : '',
+        // DURANTE o arraste: o alvo ganha só um destaque ESTÁTICO (borda + anel) — NÃO
+        // cresce nem "mexe"; os demais quadrantes ficam desfocados para o foco ir pro alvo.
+        alvo ? 'z-10 border-juncao ring-2 ring-juncao' : 'border-transparent',
+        apagado ? 'opacity-30 blur-[3px]' : 'opacity-100',
       ].join(' ')}
     >
       {alvo && <div aria-hidden className="quadriculado pointer-events-none absolute inset-0" />}
