@@ -10,6 +10,9 @@ import { api, extrairDados } from '@/lib/api'
 export interface ConfigPublica {
   recaptcha_habilitado: boolean
   recaptcha_site_key: string
+  // Login com Google: ligado quando há GOOGLE_CLIENT_ID no .env do backend.
+  google_habilitado: boolean
+  google_client_id: string
 }
 
 // buscarConfig chama GET /api/v1/config.

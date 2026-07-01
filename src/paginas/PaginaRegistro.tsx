@@ -22,6 +22,7 @@ import { criarGestor } from '@/recursos/rh/rhApi'
 import { LayoutAuth } from './LayoutAuth'
 import { RequisitosSenha, senhaForte } from '@/componentes/auth/RequisitosSenha'
 import { CampoRecaptcha } from '@/componentes/auth/CampoRecaptcha'
+import { BotaoGoogle } from '@/componentes/auth/BotaoGoogle'
 
 // Regex simples de e-mail para o sinal vermelho em tempo real.
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -362,6 +363,10 @@ export function PaginaRegistro() {
               </span>
             </span>
           </button>
+
+          {/* Atalho: criar conta com Google (cria um Gestor e já entra). Só aparece
+              se o login com Google estiver ligado no backend. */}
+          <BotaoGoogle onSucesso={() => navegar('/painel')} texto="signup_with" />
 
           <p className="text-center text-base text-tinta-suave">
             Já tem conta?{' '}

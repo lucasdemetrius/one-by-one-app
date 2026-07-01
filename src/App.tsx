@@ -14,6 +14,8 @@ import { PaginaTabuleiro } from '@/paginas/PaginaTabuleiro'
 import { PaginaConvite } from '@/paginas/PaginaConvite'
 import { PaginaRecuperarSenha } from '@/paginas/PaginaRecuperarSenha'
 import { PaginaRedefinirSenha } from '@/paginas/PaginaRedefinirSenha'
+import { PaginaConteudo } from '@/paginas/PaginaConteudo'
+import { PaginaConteudoArtigo } from '@/paginas/PaginaConteudoArtigo'
 import { PaginaPerfil } from '@/paginas/PaginaPerfil'
 import { PaginaOneByOneRota } from '@/paginas/PaginaOneByOne'
 import { PaginaMonitor } from '@/paginas/PaginaMonitor'
@@ -64,6 +66,10 @@ export function App() {
         <Route path="/convite/:token" element={<PaginaConvite />} />
         <Route path="/recuperar-senha" element={<PaginaRecuperarSenha />} />
         <Route path="/redefinir-senha/:token" element={<PaginaRedefinirSenha />} />
+
+        {/* Central de conteúdo pública (SEO) — antes dos guards, sem autenticação */}
+        <Route path="/conteudo" element={<PaginaConteudo />} />
+        <Route path="/conteudo/:slug" element={<PaginaConteudoArtigo />} />
 
         {/* Rotas protegidas — só acessíveis autenticado */}
         <Route

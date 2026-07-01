@@ -12,6 +12,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { QueryClientProvider } from '@tanstack/react-query'
+import { HelmetProvider } from 'react-helmet-async'
 
 import './index.css'
 import { App } from './App.tsx'
@@ -21,14 +22,18 @@ import { TemaProvider } from '@/recursos/tema/TemaContext'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <TemaProvider>
-      <BrowserRouter>
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-        </QueryClientProvider>
-      </BrowserRouter>
-    </TemaProvider>
+    {/* HelmetProvider habilita o <head> dinâmico por página (SEO): cada tela pode
+        definir seu próprio title/description/Open Graph/JSON-LD via o componente <SEO>. */}
+    <HelmetProvider>
+      <TemaProvider>
+        <BrowserRouter>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </QueryClientProvider>
+        </BrowserRouter>
+      </TemaProvider>
+    </HelmetProvider>
   </StrictMode>,
 )

@@ -17,7 +17,7 @@ import {
 import type { ReactNode } from 'react'
 
 import { CHAVE_TOKEN } from '@/lib/api'
-import { fazerLogin, registrarConta } from './authApi'
+import { fazerLogin, loginGoogle, registrarConta } from './authApi'
 import type {
   CredenciaisLogin,
   DadosRegistro,
@@ -34,6 +34,8 @@ interface ContextoAuth {
   autenticado: boolean
   carregando: boolean
   entrar: (credenciais: CredenciaisLogin, tokenRecaptcha?: string) => Promise<Usuario>
+  // entrarComGoogle troca o credential (ID token do Google) por uma sessão e loga.
+  entrarComGoogle: (credential: string) => Promise<Usuario>
   cadastrar: (dados: DadosRegistro, tokenRecaptcha?: string) => Promise<Usuario>
   // aplicaSessao grava token + usuário direto (ex.: ao aceitar um convite,
   // que já devolve a sessão pronta, sem novo login).
@@ -82,6 +84,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  // entrarComGoogle: autentica via Google (mesmo desfecho do entrar por senha).
+  const entrarComGoogle = useCallback(async (credential: string) => {
+    setCarregando(true)
+    try {
+      const { token, usuario: logado } = await loginGoogle(credential)
+      localStorage.setItem(CHAVE_TOKEN, token)
+      setUsuario(logado)
+      return logado
+    } finally {
+      setCarregando(false)
+    }
+  }, [])
+
   // cadastrar: cria a conta. Não loga automaticamente — a tela decide o fluxo.
   const cadastrar = useCallback(async (dados: DadosRegistro, tokenRecaptcha?: string) => {
     setCarregando(true)
@@ -115,12 +130,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       autenticado: usuario !== null,
       carregando,
       entrar,
+      entrarComGoogle,
       cadastrar,
       aplicarSessao,
       atualizarUsuario,
       sair,
     }),
-    [usuario, carregando, entrar, cadastrar, aplicarSessao, atualizarUsuario, sair],
+    [usuario, carregando, entrar, entrarComGoogle, cadastrar, aplicarSessao, atualizarUsuario, sair],
   )
 
   return <AuthContext.Provider value={valor}>{children}</AuthContext.Provider>

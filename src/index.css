@@ -498,6 +498,11 @@ body {
     animation: none;
     opacity: 0;
   }
+  /* O alvo da 9-box para de balançar, mas segue um pouco maior para indicar. */
+  .alvo-vivo {
+    animation: none;
+    transform: scale(1.04);
+  }
 }
 
 /* Esconde a barra de rolagem (carrossel de equipes estilo Netflix) */
@@ -536,6 +541,22 @@ body {
     linear-gradient(90deg, var(--color-juncao) 1px, transparent 1px);
   background-size: 14px 14px;
   opacity: 0.12;
+}
+
+/* Quadrante ALVO da Matrix9-Box: cresce e "balança" enquanto você arrasta um
+   liderado por cima dele — os demais quadrantes ficam desfocados/recuados, então
+   o foco vai todo para onde o liderado vai cair. */
+@keyframes alvo-vivo {
+  0%,
+  100% {
+    transform: scale(1.05) rotate(-0.9deg);
+  }
+  50% {
+    transform: scale(1.07) rotate(0.9deg);
+  }
+}
+.alvo-vivo {
+  animation: alvo-vivo 0.5s ease-in-out infinite;
 }
 
 /* Impressão / Exportar PDF: mostra só a área marcada (.area-impressao) */

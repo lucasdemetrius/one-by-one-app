@@ -28,6 +28,14 @@ export async function registrarConta(dados: DadosRegistro, tokenRecaptcha?: stri
   return extrairDados<Usuario>(resposta.data)
 }
 
+// loginGoogle troca o "credential" (ID token do Google) por uma sessão do OneByOne.
+// Se o e-mail ainda não tiver conta, o backend cria uma conta de Gestor.
+// Rota: POST /api/v1/auth/google
+export async function loginGoogle(credential: string): Promise<RespostaLogin> {
+  const resposta = await api.post('/auth/google', { credential })
+  return extrairDados<RespostaLogin>(resposta.data)
+}
+
 // enviarFotoPerfil faz upload da foto de perfil do usuário (multipart) e devolve
 // o usuário atualizado com a nova foto_url. Rota: POST /api/v1/usuarios/:id/foto
 export async function enviarFotoPerfil(id: string, arquivo: File): Promise<Usuario> {

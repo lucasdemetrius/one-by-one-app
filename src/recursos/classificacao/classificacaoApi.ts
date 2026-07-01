@@ -32,6 +32,12 @@ export async function definirClassificacao(
   return extrairDados<Classificacao>(resp.data)
 }
 
+// removerClassificacao: DELETE /colaboradores/:id/classificacao
+// Tira o liderado da matriz 9-box (volta para "A classificar").
+export async function removerClassificacao(colaboradorId: string): Promise<void> {
+  await api.delete(`/colaboradores/${colaboradorId}/classificacao`)
+}
+
 // ── Hooks ────────────────────────────────────────────────────────────────────
 
 export function useClassificacoes(orgId: string | undefined) {
@@ -47,6 +53,14 @@ export function useDefinirClassificacao(orgId: string) {
   return useMutation({
     mutationFn: (v: { colaboradorId: string; desempenho: Nivel; potencial: Nivel }) =>
       definirClassificacao(v.colaboradorId, v.desempenho, v.potencial),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['classificacoes', orgId] }),
+  })
+}
+
+export function useRemoverClassificacao(orgId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (colaboradorId: string) => removerClassificacao(colaboradorId),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['classificacoes', orgId] }),
   })
 }

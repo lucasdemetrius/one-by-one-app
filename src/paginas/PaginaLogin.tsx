@@ -11,6 +11,7 @@ import { BotaoDuo } from '@/componentes/ui/BotaoDuo'
 import { useAuth } from '@/recursos/auth/AuthContext'
 import { extrairMensagemErro } from '@/lib/api'
 import { CampoRecaptcha } from '@/componentes/auth/CampoRecaptcha'
+import { BotaoGoogle } from '@/componentes/auth/BotaoGoogle'
 import { LayoutAuth } from './LayoutAuth'
 
 export function PaginaLogin() {
@@ -114,6 +115,9 @@ export function PaginaLogin() {
           Entrar →
         </BotaoDuo>
       </form>
+
+      {/* Login com Google (aparece só se ligado no backend). Ao entrar, vai ao painel. */}
+      <BotaoGoogle onSucesso={() => navegar('/painel')} texto="continue_with" />
 
       <p className="mt-8 text-center text-base text-tinta-suave">
         Ainda não tem conta?{' '}

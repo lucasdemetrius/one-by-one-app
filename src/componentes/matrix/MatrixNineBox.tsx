@@ -19,7 +19,7 @@ import { LayoutGroup, motion } from 'framer-motion'
 
 import { AvatarUsuario } from '@/componentes/marca/AvatarUsuario'
 import { useColaboradores, useEquipes } from '@/recursos/time/hooks'
-import { useClassificacoes, useDefinirClassificacao } from '@/recursos/classificacao/classificacaoApi'
+import { useClassificacoes, useDefinirClassificacao, useRemoverClassificacao } from '@/recursos/classificacao/classificacaoApi'
 import type { Nivel } from '@/recursos/classificacao/classificacaoApi'
 import type { Colaborador, Organizacao } from '@/recursos/time/tipos'
 
@@ -71,11 +71,13 @@ function FichaVisual({ colaborador, fantasma = false }: { colaborador: Colaborad
 function MoverNoveBox({
   colaboradorId,
   aoPosicionar,
+  aoRemover,
   desempenho,
   potencial,
 }: {
   colaboradorId: string
   aoPosicionar: (id: string, desempenho: Nivel, potencial: Nivel) => void
+  aoRemover?: (id: string) => void
   desempenho?: Nivel
   potencial?: Nivel
 }) {
@@ -120,6 +122,18 @@ function MoverNoveBox({
             )}
           </div>
           <p className="mt-1 text-center text-[0.6rem] font-bold uppercase tracking-wider text-tinta-suave">desempenho →</p>
+          {aoRemover && (
+            <button
+              type="button"
+              onClick={() => {
+                aoRemover(colaboradorId)
+                setAberto(false)
+              }}
+              className="mt-1.5 w-full rounded border border-borda py-1 text-[0.6rem] font-bold uppercase tracking-wider text-tinta-suave hover:border-alerta hover:text-alerta"
+            >
+              Tirar da matriz
+            </button>
+          )}
         </div>
       )}
     </span>
@@ -129,29 +143,49 @@ function MoverNoveBox({
 function Ficha({
   colaborador,
   aoPosicionar,
+  aoRemover,
   desempenho,
   potencial,
 }: {
   colaborador: Colaborador
   aoPosicionar: (id: string, desempenho: Nivel, potencial: Nivel) => void
+  aoRemover?: (id: string) => void
   desempenho?: Nivel
   potencial?: Nivel
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: colaborador.id })
   return (
-    <span className="inline-flex items-center gap-1">
+    <span className="group relative inline-flex items-center gap-1">
       <motion.div
         ref={setNodeRef}
         layout
         layoutId={colaborador.id}
         transition={{ type: 'spring', stiffness: 500, damping: 34 }}
+        // Passar o mouse por cima faz o card "pular" um pouco maior (não durante o
+        // arraste — aí quem cresce é o quadrante alvo). whileTap dá um feedback ao clicar.
+        whileHover={isDragging ? undefined : { scale: 1.12, y: -2 }}
+        whileTap={isDragging ? undefined : { scale: 1.06 }}
         {...attributes}
         {...listeners}
-        className={['cursor-grab touch-none select-none active:cursor-grabbing', isDragging ? 'opacity-30' : ''].join(' ')}
+        className={['relative cursor-grab touch-none select-none active:cursor-grabbing', isDragging ? 'opacity-30' : 'hover:z-10'].join(' ')}
       >
         <FichaVisual colaborador={colaborador} />
       </motion.div>
-      <MoverNoveBox colaboradorId={colaborador.id} aoPosicionar={aoPosicionar} desempenho={desempenho} potencial={potencial} />
+      {/* Remover (desktop): ✕ no canto, aparece ao passar o mouse. No mobile fica
+          escondido (não há hover) — lá o "Tirar da matriz" vive no seletor 📍. */}
+      {aoRemover && (
+        <button
+          type="button"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={() => aoRemover(colaborador.id)}
+          aria-label="Tirar da matriz"
+          title="Tirar da matriz"
+          className="absolute -right-1 -top-1 z-10 hidden h-5 w-5 items-center justify-center rounded-full border border-borda bg-creme text-[0.6rem] text-tinta-suave shadow-[var(--shadow-cartao)] hover:border-alerta hover:text-alerta group-hover:flex"
+        >
+          ✕
+        </button>
+      )}
+      <MoverNoveBox colaboradorId={colaborador.id} aoPosicionar={aoPosicionar} aoRemover={aoRemover} desempenho={desempenho} potencial={potencial} />
     </span>
   )
 }
@@ -162,12 +196,14 @@ function Celula({
   fichas,
   arrastando,
   aoPosicionar,
+  aoRemover,
 }: {
   desempenho: Nivel
   potencial: Nivel
   fichas: Colaborador[]
   arrastando: boolean
   aoPosicionar: (id: string, desempenho: Nivel, potencial: Nivel) => void
+  aoRemover: (id: string) => void
 }) {
   const id = `${desempenho}-${potencial}`
   const { setNodeRef, isOver } = useDroppable({ id })
@@ -179,15 +215,18 @@ function Celula({
       style={{ backgroundColor: corZona(desempenho, potencial) }}
       className={[
         'relative flex min-h-24 flex-col gap-2 overflow-hidden rounded-[var(--radius-cartao)] border-2 p-1.5 transition-all duration-150 sm:min-h-32 sm:p-3',
-        alvo ? 'scale-[1.03] border-juncao ring-2 ring-juncao' : 'border-transparent',
-        apagado ? 'opacity-40 blur-[2px]' : 'opacity-100',
+        // Alvo: cresce e balança (alvo-vivo) e sobe no empilhamento (z-10) para
+        // "pular" sobre os vizinhos, deixando claro onde o liderado vai cair.
+        alvo ? 'z-10 border-juncao ring-2 ring-juncao alvo-vivo' : 'border-transparent',
+        // Demais quadrantes: recuam e desfocam para o foco ir todo pro alvo.
+        apagado ? 'scale-[0.97] opacity-30 blur-[3px]' : 'opacity-100',
       ].join(' ')}
     >
       {alvo && <div aria-hidden className="quadriculado pointer-events-none absolute inset-0" />}
       <span className="relative text-xs font-bold uppercase tracking-wider text-tinta-suave">{ROTULOS[id]}</span>
       <div className="relative flex flex-wrap content-start gap-1.5">
         {fichas.map((c) => (
-          <Ficha key={c.id} colaborador={c} aoPosicionar={aoPosicionar} desempenho={desempenho} potencial={potencial} />
+          <Ficha key={c.id} colaborador={c} aoPosicionar={aoPosicionar} aoRemover={aoRemover} desempenho={desempenho} potencial={potencial} />
         ))}
       </div>
     </div>
@@ -215,7 +254,7 @@ function Bandeja({
     >
       {alvo && <div aria-hidden className="quadriculado pointer-events-none absolute inset-0" />}
       <span className="relative mb-2 block text-xs font-bold uppercase tracking-wider text-tinta-suave">
-        A classificar — arraste para a matriz
+        A classificar — arraste para a matriz {arrastando ? '· ou solte aqui para tirar' : ''}
       </span>
       {fichas.length === 0 ? (
         <p className="relative text-sm text-tinta-suave">Todos os liderados já estão posicionados. 🎉</p>
@@ -236,9 +275,13 @@ export function MatrixNineBox({ org }: { org: Organizacao }) {
   const colaboradoresQ = useColaboradores(org.id)
   const classificacoesQ = useClassificacoes(org.id)
   const definir = useDefinirClassificacao(org.id)
+  const remover = useRemoverClassificacao(org.id)
 
   const [arrastando, setArrastando] = useState<Colaborador | null>(null)
   const [posicaoLocal, setPosicaoLocal] = useState<Record<string, { desempenho: Nivel; potencial: Nivel }>>({})
+  // Ids removidos localmente: enquanto o servidor não confirma, sobrepõem o
+  // mapaClass (senão a ficha voltaria a aparecer no quadrante até o refetch).
+  const [removidoLocal, setRemovidoLocal] = useState<Set<string>>(new Set())
   const [equipeFiltro, setEquipeFiltro] = useState('')
 
   const equipes = equipesQ.data ?? []
@@ -258,18 +301,36 @@ export function MatrixNineBox({ org }: { org: Organizacao }) {
     const porCelula: Record<string, Colaborador[]> = {}
     const naoClassificados: Colaborador[] = []
     for (const c of colaboradores) {
-      const cl = posicaoLocal[c.id] ?? mapaClass[c.id]
+      const cl = removidoLocal.has(c.id) ? undefined : (posicaoLocal[c.id] ?? mapaClass[c.id])
       if (cl) (porCelula[`${cl.desempenho}-${cl.potencial}`] ??= []).push(c)
       else naoClassificados.push(c)
     }
     return { porCelula, naoClassificados }
-  }, [colaboradores, mapaClass, posicaoLocal])
+  }, [colaboradores, mapaClass, posicaoLocal, removidoLocal])
 
   // Posiciona o liderado no 9-box de forma OTIMISTA (move já) e persiste. Usado
   // tanto pelo arraste (desktop) quanto pelo seletor 📍 (mobile).
   function posicionar(id: string, desempenho: Nivel, potencial: Nivel) {
+    // Se o liderado tinha sido tirado da matriz, desfaz a remoção local.
+    setRemovidoLocal((s) => {
+      if (!s.has(id)) return s
+      const n = new Set(s)
+      n.delete(id)
+      return n
+    })
     setPosicaoLocal((p) => ({ ...p, [id]: { desempenho, potencial } }))
     definir.mutate({ colaboradorId: id, desempenho, potencial })
+  }
+
+  // Tira o liderado da matriz (volta para "A classificar"), também OTIMISTA.
+  function removerDaMatriz(id: string) {
+    setPosicaoLocal((p) => {
+      if (!(id in p)) return p
+      const { [id]: _descartado, ...resto } = p
+      return resto
+    })
+    setRemovidoLocal((s) => new Set(s).add(id))
+    remover.mutate(id)
   }
 
   function aoIniciar(e: DragStartEvent) {
@@ -278,9 +339,15 @@ export function MatrixNineBox({ org }: { org: Organizacao }) {
   function aoFinalizar(e: DragEndEvent) {
     setArrastando(null)
     const over = e.over?.id
-    if (!over || over === 'bandeja') return
+    if (!over) return
+    const id = String(e.active.id)
+    // Soltar de volta na bandeja "A classificar" = tirar da matriz.
+    if (over === 'bandeja') {
+      removerDaMatriz(id)
+      return
+    }
     const [desempenho, potencial] = String(over).split('-') as [Nivel, Nivel]
-    posicionar(String(e.active.id), desempenho, potencial)
+    posicionar(id, desempenho, potencial)
   }
 
   const destaques = (porCelula['ALTO-ALTO'] ?? []).length
@@ -333,7 +400,7 @@ export function MatrixNineBox({ org }: { org: Organizacao }) {
                 <div className="grid grid-cols-3 gap-1.5 sm:gap-3">
                   {POTENCIAIS.map((pot) =>
                     NIVEIS.map((des) => (
-                      <Celula key={`${des}-${pot}`} desempenho={des} potencial={pot} fichas={porCelula[`${des}-${pot}`] ?? []} arrastando={arrastandoAtivo} aoPosicionar={posicionar} />
+                      <Celula key={`${des}-${pot}`} desempenho={des} potencial={pot} fichas={porCelula[`${des}-${pot}`] ?? []} arrastando={arrastandoAtivo} aoPosicionar={posicionar} aoRemover={removerDaMatriz} />
                     )),
                   )}
                 </div>
