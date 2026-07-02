@@ -24,11 +24,11 @@ import type { PapelGoogle } from '@/recursos/auth/authApi'
 // Largura máxima que o Google aceita para o botão (limite do GIS).
 const LARGURA_MAXIMA_GOOGLE = 400
 
-// Opções da pergunta "Como você vai usar?" (conta nova via Google).
+// Opções da pergunta "Como você vai usar?" (conta nova via Google). Só Gestor e RH:
+// o liderado NÃO se auto-cadastra — entra por convite do gestor.
 const PAPEIS: { papel: PapelGoogle; emoji: string; titulo: string; descricao: string }[] = [
   { papel: 'LIDER', emoji: '🧭', titulo: 'Sou Gestor', descricao: 'Gerencio meu time e faço os 1:1 com meus liderados.' },
   { papel: 'RH', emoji: '🏛️', titulo: 'Sou RH', descricao: 'Cadastro os gestores da empresa e acompanho todos eles.' },
-  { papel: 'COLABORADOR', emoji: '🤝', titulo: 'Sou Liderado', descricao: 'Participo dos 1:1 com o meu gestor.' },
 ]
 
 interface Props {

@@ -29,7 +29,8 @@ export async function registrarConta(dados: DadosRegistro, tokenRecaptcha?: stri
 }
 
 // Papéis possíveis para uma conta NOVA criada via Google (pergunta "como você vai usar?").
-export type PapelGoogle = 'LIDER' | 'RH' | 'COLABORADOR'
+// Só Gestor (LIDER) e RH — o liderado não se auto-cadastra, entra por convite.
+export type PapelGoogle = 'LIDER' | 'RH'
 
 // Resposta do login com Google: ou a sessão vem pronta (token + usuario), ou
 // precisa_papel=true — o e-mail ainda não tem conta e é preciso perguntar o papel.
