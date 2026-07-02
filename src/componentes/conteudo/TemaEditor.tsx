@@ -16,6 +16,7 @@ import {
   listarBlocos,
 } from '@/recursos/conteudo/conteudoApi'
 import type { Bloco } from '@/recursos/conteudo/conteudoApi'
+import { urlSegura } from '@/lib/url'
 
 interface TemaEditorProps {
   colaboradorId: string
@@ -247,7 +248,7 @@ export function TemaEditor({
 
                   {b.tipo === 'LINK' && (
                     <a
-                      href={b.url ?? '#'}
+                      href={urlSegura(b.url) ?? '#'}
                       target="_blank"
                       rel="noreferrer"
                       className="flex items-center gap-2 pr-6 font-semibold text-gestor hover:underline"

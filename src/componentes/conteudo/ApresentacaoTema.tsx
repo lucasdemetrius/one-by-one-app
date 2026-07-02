@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 
 import { listarBlocos } from '@/recursos/conteudo/conteudoApi'
 import type { Bloco } from '@/recursos/conteudo/conteudoApi'
+import { urlSegura } from '@/lib/url'
 
 interface ApresentacaoProps {
   colaboradorId: string
@@ -93,7 +94,7 @@ export function ApresentacaoTema({ colaboradorId, tema, aoFechar }: Apresentacao
 
                   {b.tipo === 'LINK' && (
                     <a
-                      href={b.url ?? '#'}
+                      href={urlSegura(b.url) ?? '#'}
                       target="_blank"
                       rel="noreferrer"
                       className="flex items-center gap-3 rounded-[var(--radius-cartao)] border-2 border-borda bg-creme p-5 shadow-[var(--shadow-cartao)] transition hover:border-gestor"
